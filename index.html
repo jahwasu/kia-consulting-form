@@ -579,25 +579,25 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="toggle-row">
     <div class="toggle-label"><span class="toggle-dot" style="background:var(--blue)"></span>ISA</div>
     <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="isa_chk" onchange="toggleTax('isa')"><span class="slider"></span></label></div>
-    <input class="tax-inp" type="number" id="isa_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="isa_bal" oninput="updateStickyBar()" placeholder="0" disabled>
     <input class="tax-inp" type="number" id="isa_mo" placeholder="0" disabled>
   </div>
   <div class="toggle-row">
     <div class="toggle-label"><span class="toggle-dot" style="background:var(--teal)"></span>연금저축</div>
     <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="pension_chk" onchange="toggleTax('pension')"><span class="slider"></span></label></div>
-    <input class="tax-inp" type="number" id="pension_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="pension_bal" oninput="updateStickyBar()" placeholder="0" disabled>
     <input class="tax-inp" type="number" id="pension_mo" placeholder="0" disabled>
   </div>
   <div class="toggle-row">
     <div class="toggle-label"><span class="toggle-dot" style="background:var(--purple)"></span>IRP</div>
     <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="irp_chk" onchange="toggleTax('irp')"><span class="slider"></span></label></div>
-    <input class="tax-inp" type="number" id="irp_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="irp_bal" oninput="updateStickyBar()" placeholder="0" disabled>
     <input class="tax-inp" type="number" id="irp_mo" placeholder="0" disabled>
   </div>
   <div class="toggle-row">
     <div class="toggle-label"><span class="toggle-dot" style="background:var(--amber)"></span>비과세연금</div>
     <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="va_chk" onchange="toggleTax('va')"><span class="slider"></span></label></div>
-    <input class="tax-inp" type="number" id="va_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="va_bal" oninput="updateStickyBar()" placeholder="0" disabled>
     <input class="tax-inp" type="number" id="va_mo" placeholder="0" disabled>
   </div>
   <div class="nav"><button class="btn btn-prev" onclick="goTo(1)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">3/7</span><button class="btn btn-next" onclick="goTo(3)">다음 →</button></div>
