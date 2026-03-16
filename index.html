@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1차 상담 입력 폼 v6.0 | 기아차지부 법률재무상담센터</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+:root{
+  --navy:#1A3A5C;--navy2:#1e4a7a;--teal:#1d9e75;--teal2:#22b88a;
+  --blue:#185fa5;--amber:#BA7517;--red:#c0392b;--purple:#534AB7;
+  --bg:#0d1b26;--bg2:#122030;--bg3:#162840;
+  --border:#1e3448;--border2:#2a4560;
+  --text:#e2ddd5;--text2:#8fa8c0;--text3:#5a7a96;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px 16px 80px}
+.wrap{max-width:700px;margin:0 auto}
+.hdr{text-align:center;margin-bottom:26px}
+.hdr-org{font-size:11.5px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.hdr-title{font-size:23px;font-weight:700;color:var(--text)}
+.hdr-sub{font-size:12.6px;color:var(--text3);margin-top:2px}
+.prog-bar{display:flex;align-items:center;padding:0 2px;margin-bottom:6px}
+.pip{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12.6px;font-weight:600;flex-shrink:0;transition:all .3s;background:var(--bg3);color:var(--text3);border:1.5px solid var(--border2);cursor:pointer}
+.pip.done{background:var(--teal);color:#fff;border-color:var(--teal)}
+.pip.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.2)}
+.pline{flex:1;height:2px;background:var(--border2);transition:background .3s}
+.pline.done{background:var(--teal)}
+.plabels{display:flex;margin-bottom:24px;padding:0 2px}
+.plabel{flex:1;font-size:10.3px;color:var(--text3);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plabel.active{color:var(--blue);font-weight:600}
+.plabel.done{color:var(--teal)}
+.panel{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:14px;animation:fi .3s ease}
+.panel.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.p-step{font-size:11.5px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.p-title{font-size:19.5px;font-weight:700;color:var(--text);margin-bottom:3px}
+.p-desc{font-size:13.8px;color:var(--text2);line-height:1.6;margin-bottom:18px}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.6px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.field input,.field select{width:100%;padding:8px 11px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:14.9px;font-family:'Noto Sans KR',sans-serif;transition:border-color .2s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+.field input::placeholder{color:var(--text3)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.btn-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.btn-opt{padding:6px 13px;border:1px solid var(--border2);border-radius:20px;font-size:13.8px;cursor:pointer;background:var(--bg3);color:var(--text2);transition:all .2s;font-family:'Noto Sans KR',sans-serif;user-select:none}
+.btn-opt:hover{border-color:var(--blue);color:var(--text)}
+.btn-opt.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.sdiv{display:flex;align-items:center;gap:9px;margin:16px 0 12px}
+.sdiv span{font-size:12.6px;font-weight:600;color:var(--text2);white-space:nowrap}
+.sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--border2)}
+.ym-wrap{display:flex;gap:6px}
+.ym-wrap select{flex:1;padding:8px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:14.9px;font-family:'Noto Sans KR',sans-serif;cursor:pointer}
+.ym-wrap select:focus{outline:none;border-color:var(--blue)}
+
+/* ── 반복 가능한 카드 ── */
+.repeatable-section{margin-bottom:14px}
+.rep-card{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px;margin-bottom:8px;position:relative}
+.rep-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.rep-card-title{font-size:12.6px;color:var(--text2);font-weight:600}
+.rep-remove{width:22px;height:22px;border-radius:50%;background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#e88;font-size:16.1px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.rep-remove:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.rep-add-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;background:transparent;border:1px dashed var(--border2);border-radius:8px;color:var(--text3);font-size:13.8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;width:100%}
+.rep-add-btn:hover{border-color:var(--blue);color:var(--blue)}
+.rep-add-btn .plus{width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:14.9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* 잔고 자동계산 힌트 */
+.auto-hint{font-size:11.5px;color:var(--teal);margin-top:3px;display:none}
+.auto-hint.show{display:block}
+
+/* 절세계좌 토글 */
+.toggle-row{display:grid;grid-template-columns:160px 52px 1fr 1fr;gap:8px;align-items:center;margin-bottom:10px}
+.toggle-row:last-child{margin-bottom:0}
+.toggle-label{font-size:13.8px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.toggle-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.toggle-wrap{display:flex;justify-content:center;align-items:center}
+.switch{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.slider{position:absolute;cursor:pointer;inset:0;background:#1e3448;border-radius:26px;transition:.3s;border:1.5px solid var(--border2)}
+.slider:before{position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;background:#5a7a96;border-radius:50%;transition:.3s}
+.switch input:checked+.slider{background:var(--blue);border-color:var(--blue)}
+.switch input:checked+.slider:before{transform:translateX(20px);background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tax-inp{padding:7px 9px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:13.8px;text-align:right;width:100%;font-family:'Noto Sans KR',sans-serif;transition:border-color .2s}
+.tax-inp:disabled{opacity:.3;cursor:not-allowed;background:var(--bg)}
+.tax-inp:enabled:focus{outline:none;border-color:var(--blue)}
+.tax-hdr{display:grid;grid-template-columns:160px 52px 1fr 1fr;gap:8px;margin-bottom:7px}
+.tax-hdr span{font-size:11.5px;color:var(--text3);text-align:center}
+.tax-hdr span:first-child{text-align:left}
+
+/* 성향진단 */
+.diag-intro{background:rgba(24,95,165,.12);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 13px;font-size:13.8px;color:var(--text2);line-height:1.7;margin-bottom:16px}
+.q-block{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px;margin-bottom:10px;transition:border-color .2s}
+.q-block.answered{border-color:rgba(29,158,117,.4)}
+.q-num{font-size:11.5px;color:var(--text3);font-weight:600;letter-spacing:1px;margin-bottom:4px}
+.q-text{font-size:14.9px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.5}
+.q-scenario{font-size:12.6px;color:var(--text2);background:rgba(255,255,255,.04);border-radius:6px;padding:7px 10px;margin-bottom:9px;line-height:1.6}
+.q-opts{display:flex;flex-direction:column;gap:5px}
+.q-opt-btn{padding:8px 12px;border:1px solid var(--border2);border-radius:7px;font-size:13.8px;cursor:pointer;background:var(--bg2);color:var(--text2);transition:all .2s;text-align:left;font-family:'Noto Sans KR',sans-serif;line-height:1.5}
+.q-opt-btn:hover{border-color:var(--blue);color:var(--text);background:rgba(24,95,165,.08)}
+.q-opt-btn.selected{background:rgba(24,95,165,.2);border-color:var(--blue);color:#fff}
+.res-box{border-radius:10px;padding:15px;margin-top:14px;display:none}
+.res-box.show{display:block;animation:fi .4s ease}
+.res-badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:12.6px;font-weight:600;margin-bottom:7px}
+.res-name{font-size:24.1px;font-weight:700;margin-bottom:3px}
+.res-score{font-size:13.8px;margin-bottom:8px}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px}
+.res-cell{background:rgba(255,255,255,.06);border-radius:7px;padding:8px;text-align:center}
+.rc-l{font-size:11.5px;margin-bottom:2px;opacity:.7}
+.rc-v{font-size:17.2px;font-weight:700}
+.res-desc{font-size:13.8px;line-height:1.7;opacity:.85}
+.mismatch{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:7px;padding:9px 12px;font-size:13.8px;color:#e88;line-height:1.6;margin-top:9px;display:none}
+.mismatch.show{display:block}
+
+/* 배분 */
+.alloc-row{display:grid;grid-template-columns:2fr 1fr 56px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.alloc-row:last-child{border-bottom:none}
+.alloc-inp{padding:7px 9px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-size:14.9px;text-align:right;width:100%;font-family:'Noto Sans KR',sans-serif}
+.alloc-inp:focus{outline:none;border-color:var(--blue)}
+.asset-tag{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:11px;font-size:12.6px;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);margin:3px;transition:all .2s}
+.asset-tag.linked{background:var(--teal);color:#fff;border-color:var(--teal)}
+.asset-tag.linked-amber{background:var(--amber);color:#fff;border-color:var(--amber)}
+.principle-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(29,158,117,.1);border:1px solid rgba(29,158,117,.3);border-radius:9px;cursor:pointer;font-size:13.8px;color:var(--teal);font-family:'Noto Sans KR',sans-serif;transition:all .2s;margin-top:16px}
+.principle-btn:hover{background:rgba(29,158,117,.18);border-color:var(--teal)}
+
+/* 미리보기 */
+.preview-box{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:15px;font-size:13.8px;line-height:2;color:var(--text2);white-space:pre-wrap;max-height:360px;overflow-y:auto;font-family:'Noto Sans KR',sans-serif}
+
+/* 전송 상태 */
+.send-status{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px;margin-top:12px;font-size:13.8px;color:var(--text2);line-height:1.8}
+.send-status .status-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.send-status .status-row:last-child{margin-bottom:0}
+.status-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11.5px;flex-shrink:0}
+.si-wait{background:var(--border2);color:var(--text3)}
+.si-ok{background:var(--teal);color:#fff}
+.si-err{background:var(--red);color:#fff}
+
+/* 버튼 */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:8px}
+.btn{padding:9px 20px;border-radius:8px;font-size:14.9px;font-weight:600;cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif;transition:all .2s}
+.btn-prev{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.btn-prev:hover{border-color:var(--text2);color:var(--text)}
+.btn-next{background:var(--blue);color:#fff}
+.btn-next:hover{background:var(--navy2)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:var(--teal2)}
+.btn-red{background:var(--red);color:#fff}
+.btn-gray{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.send-row{display:flex;gap:10px;margin-top:14px}
+.load-row{display:flex;justify-content:flex-end;margin-bottom:14px}
+.btn-load{padding:7px 15px;border-radius:8px;font-size:13.8px;font-weight:600;cursor:pointer;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);font-family:'Noto Sans KR',sans-serif;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-load:hover{border-color:var(--blue);color:var(--text)}
+
+/* 모달 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:28px;max-width:440px;width:100%;animation:fi .25s ease}
+.modal-icon{font-size:41.4px;margin-bottom:12px;text-align:center}
+.modal-title{font-size:19.5px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:center}
+.modal-desc{font-size:14.9px;color:var(--text2);line-height:1.7;margin-bottom:20px;text-align:center}
+.modal-btns{display:flex;gap:10px;justify-content:center}
+.principle-modal{max-width:520px}
+.pm-title{font-size:18.4px;font-weight:700;color:var(--teal);margin-bottom:4px}
+.pm-sub{font-size:13.8px;color:var(--text3);margin-bottom:20px}
+.pm-item{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.pm-item:last-child{margin-bottom:0}
+.pm-num{width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-size:13.8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.pm-name{font-size:14.9px;font-weight:600;color:var(--text);margin-bottom:3px}
+.pm-desc{font-size:13.8px;color:var(--text2);line-height:1.7}
+.pm-close{display:flex;justify-content:flex-end;margin-top:20px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;padding:9px 22px;border-radius:22px;font-size:14.9px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:1001;white-space:nowrap}
+.toast.show{opacity:1}
+@media(max-width:520px){
+  .g2,.g3{grid-template-columns:1fr}
+  .toggle-row{grid-template-columns:130px 46px 1fr 1fr}
+  .res-grid{grid-template-columns:1fr 1fr}
+}
+
+/* 교육 블록 */
+
+.edu-block.confirmed{border-color:rgba(29,158,117,.5)}
+
+
+
+
+.edu-arrow.open{transform:rotate(180deg)}
+
+.edu-body.open{display:block;animation:fi .2s ease}
+
+
+
+
+.edu-btn:hover{border-color:var(--teal);color:var(--teal)}
+.edu-btn.done{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+.skip-btn{padding:5px 13px;border-radius:20px;font-size:12.6px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:'Noto Sans KR',sans-serif;transition:all .2s}
+.skip-btn:hover{border-color:var(--text2);color:var(--text2)}
+
+/* ── 인트로 전용 ── */
+.intro-wrap{background:linear-gradient(150deg,#0a1520 0%,#1A3A5C 50%,#0d2218 100%);border-radius:14px;padding:32px 22px 26px;position:relative;overflow:hidden}
+.intro-deco1{position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(29,158,117,.15) 0%,transparent 70%);pointer-events:none}
+.intro-deco2{position:absolute;bottom:-40px;left:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(24,95,165,.09) 0%,transparent 70%);pointer-events:none}
+.intro-org{font-size:11.5px;color:rgba(255,255,255,.4);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:10px}
+.intro-title{font-size:32.2px;font-weight:700;color:#fff;line-height:1.25;margin-bottom:8px}
+.intro-sub{font-size:14.9px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:26px}
+.intro-vals{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:24px}
+.intro-val{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 10px;text-align:center;transition:all .2s;cursor:default}
+.intro-val:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+.iv-icon{font-size:25.3px;margin-bottom:7px}
+.iv-name{font-size:12.6px;font-weight:600;color:#fff;margin-bottom:4px}
+.iv-desc{font-size:11.5px;color:rgba(255,255,255,.45);line-height:1.5}
+.intro-flow{background:rgba(0,0,0,.3);border-radius:10px;padding:16px;margin-bottom:20px}
+.intro-flow-title{font-size:11.5px;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.flow-steps{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:4px}
+.flow-step{flex-shrink:0;text-align:center;padding:0 8px}
+.fs-num{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);font-size:12.6px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 5px}
+.fs-num.highlight{background:var(--teal);border-color:var(--teal)}
+.fs-label{font-size:11.5px;color:rgba(255,255,255,.55);white-space:nowrap}
+.flow-arrow{color:rgba(255,255,255,.2);font-size:13.8px;flex-shrink:0}
+.intro-proposal{background:rgba(29,158,117,.1);border:1px solid rgba(29,158,117,.2);border-radius:10px;padding:14px;margin-bottom:20px}
+.intro-proposal-title{font-size:12.6px;font-weight:600;color:var(--teal);margin-bottom:10px}
+.proposal-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pg-item{display:flex;align-items:flex-start;gap:7px;font-size:12.6px;color:rgba(255,255,255,.65);line-height:1.5}
+.pg-icon{flex-shrink:0;margin-top:1px}
+.intro-ment{background:rgba(255,255,255,.05);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:14px;margin-bottom:22px}
+.intro-ment-label{font-size:11.5px;color:rgba(255,255,255,.35);margin-bottom:6px;letter-spacing:.5px}
+.intro-ment-text{font-size:14.9px;color:rgba(255,255,255,.8);line-height:1.85;font-style:italic}
+.intro-start-btn{width:100%;padding:15px;background:var(--teal);border:none;border-radius:10px;font-size:17.2px;font-weight:700;color:#fff;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:.5px;transition:all .2s}
+.intro-start-btn:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(29,158,117,.35)}
+.intro-note{text-align:center;margin-top:11px;font-size:12.6px;color:rgba(255,255,255,.28)}
+
+
+/* ── 교육 카드 ── */
+
+
+
+
+
+
+
+
+
+/* ── 퀴즈 ── */
+
+
+
+
+.quiz-opt:hover:not(:disabled){border-color:var(--blue);color:var(--text);background:rgba(24,95,165,.08)}
+.quiz-opt.correct{background:rgba(29,158,117,.2);border-color:var(--teal);color:#6dccaa}
+.quiz-opt.wrong{background:rgba(192,57,43,.15);border-color:#c0392b;color:#e88}
+
+.quiz-result.show{display:block}
+
+/* ── 시뮬레이터 ── */
+
+
+
+
+
+
+
+/* ── 스토리텔링 ── */
+.story-opts{display:flex;flex-direction:column;gap:7px}
+
+.story-opt:hover:not(:disabled){border-color:var(--blue);color:var(--text);background:rgba(24,95,165,.08)}
+.story-opt.chosen{border-color:var(--blue);background:rgba(24,95,165,.08);color:var(--text)}
+
+.story-result-box.show{display:block}
+
+
+
+
+
+
+/* ── 절세계산기 ── */
+
+.tax-table th{padding:9px 8px;text-align:left;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border2);font-size:12.6px}
+.tax-table td{padding:9px 8px;border-bottom:1px solid var(--border);color:var(--text)}
+.tax-table tr:last-child td{border-bottom:none}
+.tax-total-box{background:rgba(29,158,117,.12);border:1px solid rgba(29,158,117,.25);border-radius:8px;padding:11px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+
+
+
+/* ── 이해 확인 버튼 ── */
+
+.edu-confirm-btn:hover:not(.done){border-color:var(--teal);color:var(--teal)}
+.edu-confirm-btn.done{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+
+.skip-btn{padding:5px 13px;border-radius:20px;font-size:12.6px;cursor:pointer;background:transparent;border:1px solid var(--border2);color:var(--text3);font-family:'Noto Sans KR',sans-serif;transition:all .2s}
+.skip-btn:hover{border-color:var(--text2);color:var(--text2)}
+
+
+/* ── 인트로 페이드 전환 ── */
+#p-intro {
+  transition: opacity .45s ease, transform .45s ease;
+}
+#p-intro.fading-out {
+  opacity: 0 !important;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+.panel {
+  transition: opacity .35s ease;
+}
+.panel.fade-in {
+  animation: panelFadeIn .4s ease forwards;
+}
+@keyframes panelFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 스티키 요약 바 ── */
+#sticky-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,27,38,.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border2);
+  padding: 9px 16px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 -16px 14px;
+  animation: slideDown .3s ease;
+}
+#sticky-bar.show { display: flex; }
+@keyframes slideDown {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.sb-item { text-align: center; flex: 1; }
+.sb-label { font-size: 10px; color: var(--text3); margin-bottom: 2px; }
+.sb-val { font-size: 14px; font-weight: 700; }
+.sb-divider { width: 1px; height: 28px; background: var(--border2); flex-shrink: 0; }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="hdr-org">기아차지부 법률재무상담센터</div>
+  <div class="hdr-title">1차 상담 입력 폼</div>
+  <div class="hdr-sub">v6.0</div>
+</div>
+
+<div id="nav-wrap" style="display:none">
+<div class="prog-bar">
+  <div class="pip active" id="pip0" onclick="goTo(0)">1</div><div class="pline" id="pl0"></div>
+  <div class="pip" id="pip1" onclick="goTo(1)">2</div><div class="pline" id="pl1"></div>
+  <div class="pip" id="pip2" onclick="goTo(2)">3</div><div class="pline" id="pl2"></div>
+  <div class="pip" id="pip3" onclick="goTo(3)">4</div><div class="pline" id="pl3"></div>
+  <div class="pip" id="pip4" onclick="goTo(4)">5</div><div class="pline" id="pl4"></div>
+  <div class="pip" id="pip5" onclick="goTo(5)">6</div><div class="pline" id="pl5"></div>
+  <div class="pip" id="pip6" onclick="goTo(6)">7</div>
+</div>
+<div class="plabels">
+  <span class="plabel active" id="lbl0">기본정보</span>
+  <span class="plabel" id="lbl1">소득·자산</span>
+  <span class="plabel" id="lbl2">절세계좌</span>
+  <span class="plabel" id="lbl3">목표</span>
+  <span class="plabel" id="lbl4">성향진단</span>
+  <span class="plabel" id="lbl5">배분·연결</span>
+  <span class="plabel" id="lbl6">확인·저장</span>
+</div>
+</div>
+
+
+<!-- ===== 1단계 ===== -->
+
+<!-- ===== 0단계: 상담 안내 인트로 ===== -->
+<div class="panel active" id="p-intro" style="margin-top:0">
+<div style="background:linear-gradient(170deg,#091521 0%,#1A3A5C 55%,#0a1e14 100%);border-radius:14px;padding:28px 22px 26px;position:relative;overflow:hidden">
+
+  <!-- 배경 글로우 -->
+  <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(29,158,117,.07) 0%,transparent 70%);pointer-events:none"></div>
+  <div style="position:absolute;bottom:-50px;left:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(24,95,165,.08) 0%,transparent 70%);pointer-events:none"></div>
+
+  <!-- 기관명 + 타이틀 -->
+  <div style="font-size:11.5px;color:rgba(255,255,255,.38);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:10px">기아차지부 법률재무상담센터</div>
+  <div style="font-size:27.6px;font-weight:700;color:#fff;line-height:1.25;margin-bottom:4px">맞춤형 자산관리<br>포트폴리오 상담</div>
+  <div style="font-size:13.8px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:18px">고객님의 재무 상황과 목표에 맞는 최적의<br>투자 포트폴리오를 과학적으로 설계해 드립니다.</div>
+
+  <!-- 세로 타임라인 -->
+  <div style="background:rgba(0,0,0,.28);border-radius:12px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:11.5px;color:rgba(255,255,255,.38);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px">오늘 상담 절차</div>
+
+    <div style="position:relative">
+      <!-- 세로선 -->
+      <div style="position:absolute;left:13px;top:6px;bottom:6px;width:2px;background:linear-gradient(to bottom,#1d9e75,#185fa5,#534AB7,#BA7517,#1d9e75,#185fa5);opacity:.4;border-radius:1px"></div>
+
+      <!-- 각 단계 -->
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div style="width:28px;height:28px;border-radius:50%;background:#1d9e75;display:flex;align-items:center;justify-content:center;font-size:12.6px;font-weight:700;color:#fff;flex-shrink:0;position:relative;z-index:1;box-shadow:0 0 0 3px rgba(29,158,117,.2)">1</div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div style="font-size:14.9px;font-weight:600;color:#fff">기본 정보 파악</div>
+          <div style="font-size:12.6px;color:rgba(255,255,255,.45)">인적사항·소득·지출·기존 자산 현황</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div style="width:28px;height:28px;border-radius:50%;background:#185fa5;display:flex;align-items:center;justify-content:center;font-size:12.6px;font-weight:700;color:#fff;flex-shrink:0;position:relative;z-index:1;box-shadow:0 0 0 3px rgba(24,95,165,.2)">2</div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div style="font-size:14.9px;font-weight:600;color:#fff">절세계좌 현황 확인</div>
+          <div style="font-size:12.6px;color:rgba(255,255,255,.45)">ISA·연금저축·IRP·비과세연금 가입 및 잔고</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div style="width:28px;height:28px;border-radius:50%;background:#534AB7;display:flex;align-items:center;justify-content:center;font-size:12.6px;font-weight:700;color:#fff;flex-shrink:0;position:relative;z-index:1;box-shadow:0 0 0 3px rgba(83,74,183,.2)">3</div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div style="font-size:14.9px;font-weight:600;color:#fff">재무 목표 설정</div>
+          <div style="font-size:12.6px;color:rgba(255,255,255,.45)">결혼·내집마련·은퇴 등 목표 시기·금액 확정</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div style="width:28px;height:28px;border-radius:50%;background:#BA7517;display:flex;align-items:center;justify-content:center;font-size:12.6px;font-weight:700;color:#fff;flex-shrink:0;position:relative;z-index:1;box-shadow:0 0 0 3px rgba(186,117,23,.2)">4</div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div style="font-size:14.9px;font-weight:600;color:#fff">ETF · 절세계좌 교육</div>
+          <div style="font-size:12.6px;color:rgba(255,255,255,.45)">투자 개념 이해 · 수익 비교 · 절세 계산</div>
+        </div>
+      </div>
+
+
+
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:28px;height:28px;border-radius:50%;background:#185fa5;display:flex;align-items:center;justify-content:center;font-size:14.9px;font-weight:700;color:#fff;flex-shrink:0;position:relative;z-index:1;box-shadow:0 0 0 3px rgba(24,95,165,.2)">📄</div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div style="font-size:14.9px;font-weight:600;color:#fff">2차 제안서 제공</div>
+          <div style="font-size:12.6px;color:rgba(255,255,255,.45)">포트폴리오·절세·목표달성·리밸런싱 로드맵</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 시작 버튼 -->
+
+
+  <button onclick="startConsult()"
+    style="width:100%;padding:15px;background:#1d9e75;border:none;border-radius:10px;font-size:17.2px;font-weight:700;color:#fff;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;letter-spacing:.3px"
+    onmouseover="this.style.background='#22b88a';this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 18px rgba(29,158,117,.4)'"
+    onmouseout="this.style.background='#1d9e75';this.style.transform='';this.style.boxShadow=''">
+    상담 시작하기 →
+  </button>
+  <div style="text-align:center;margin-top:11px;font-size:12.6px;color:rgba(255,255,255,.25)">소요 시간 약 20~30분 · 입력 정보는 안전하게 관리됩니다</div>
+
+  <!-- 교육 사이트 링크 — 시작 버튼 하단 -->
+  <div style="margin-top:14px;padding:13px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s"
+    onclick="window.open('https://snp500-edu-02.vercel.app','_blank')"
+    onmouseover="this.style.background='rgba(255,255,255,.09)';this.style.borderColor='rgba(255,255,255,.2)'"
+    onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.1)'">
+    <div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.35);letter-spacing:.5px;margin-bottom:3px;text-transform:uppercase">투자 교육 자료</div>
+      <div style="font-size:13.8px;font-weight:600;color:rgba(255,255,255,.75);line-height:1.4">S&P500 장기투자 — 계좌가 수익을 결정한다.</div>
+    </div>
+    <div style="font-size:18.4px;flex-shrink:0;margin-left:12px;color:rgba(255,255,255,.35)">→</div>
+  </div>
+</div>
+</div>
+
+<div class="panel" id="p0">
+  <!-- 불러오기 버튼 — 1단계에만 표시 -->
+  <div class="load-row" style="margin-bottom:14px">
+    <button class="btn-load" onclick="document.getElementById('load-input').click()">📂 기존 상담 불러오기</button>
+    <input type="file" id="load-input" accept=".md,.txt" style="display:none" onchange="loadMD(event)">
+  </div>
+
+  <div class="p-step">STEP 1 / 7</div>
+  <div class="p-title">기본 정보</div>
+  <div class="p-desc">고객의 인적사항을 입력합니다.</div>
+  <div class="g2">
+    <div class="field"><label>고객 성명</label><input id="name" placeholder="홍길동"></div>
+    <div class="field"><label>생년월일</label><input id="birth" placeholder="1990-01-01" oninput="calcAge()"></div>
+  </div>
+  <div class="g3">
+    <div class="field"><label>성별</label><div class="btn-group"><div class="btn-opt" onclick="tog1('gen','남성',this)">남성</div><div class="btn-opt" onclick="tog1('gen','여성',this)">여성</div></div></div>
+    <div class="field"><label>혼인</label><div class="btn-group"><div class="btn-opt" onclick="tog1('mar','미혼',this)">미혼</div><div class="btn-opt" onclick="tog1('mar','기혼',this)">기혼</div></div></div>
+    <div class="field"><label>나이 (자동)</label><input id="age" readonly placeholder="—" style="background:var(--bg);color:var(--text3)"></div>
+  </div>
+  <div class="g2">
+    <div class="field"><label>자녀</label><div class="btn-group"><div class="btn-opt" onclick="tog1('child','없음',this)">없음</div><div class="btn-opt" onclick="tog1('child','1명',this)">1명</div><div class="btn-opt" onclick="tog1('child','2명↑',this)">2명↑</div></div></div>
+    <div class="field"><label>부모 부양</label><div class="btn-group"><div class="btn-opt" onclick="tog1('dep','없음',this)">없음</div><div class="btn-opt" onclick="tog1('dep','있음',this)">있음</div></div></div>
+  </div>
+  <div class="g2">
+    <div class="field"><label>담당 설계사</label><input id="agent" placeholder="홍길동 설계사"></div>
+    <div class="field"><label>상담 일자</label><input id="cdate" type="date"></div>
+  </div>
+  <div class="nav"><span></span><span style="font-size:12.6px;color:var(--text3)">1/7</span><button class="btn btn-next" onclick="goTo(1)">다음 →</button></div>
+</div>
+
+<!-- ===== 2단계: 소득·자산 ===== -->
+<div class="panel" id="p1">
+  <div class="p-step">STEP 2 / 7</div>
+  <div class="p-title">소득 및 기존 자산</div>
+  <div class="p-desc">없는 항목은 0으로 두셔도 됩니다.</div>
+
+  <div class="sdiv"><span>소득·지출</span></div>
+  <div class="g3">
+    <div class="field"><label>월 세후소득 (만원)</label><input id="income" type="number" oninput="updateStickyBar()" placeholder="0"></div>
+    <div class="field"><label>월 고정지출 (만원)</label><input id="expense" type="number" placeholder="0"></div>
+    <div class="field"><label>월 저축가능 (만원)</label><input id="savable" type="number" oninput="updateStickyBar()" placeholder="0"></div>
+  </div>
+  <div class="g2">
+    <div class="field"><label>대출 잔액 (만원)</label><input id="loan" type="number" placeholder="0"></div>
+    <div class="field"><label>대출 금리 (%)</label><input id="loanrate" type="number" placeholder="0.0" step="0.1"></div>
+  </div>
+
+  <div class="sdiv"><span>기존 금융자산</span></div>
+  <div class="field"><label>예금 잔고 (만원)</label><input id="deposit" type="number" oninput="updateStickyBar()" placeholder="0"></div>
+
+  <!-- 적금 (반복 추가 가능) -->
+  <div class="sdiv">
+    <span>적금</span>
+    <button class="rep-add-btn" onclick="addSavings()" style="width:auto;padding:4px 10px;font-size:12.6px;border-radius:20px;flex-shrink:0">
+      <span class="plus">+</span> 적금 추가
+    </button>
+  </div>
+  <div class="repeatable-section" id="savings-list"></div>
+
+  <!-- 청약저축 -->
+  <div class="sdiv"><span>청약저축</span></div>
+  <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px;margin-bottom:13px">
+    <div class="g3">
+      <div class="field"><label>가입 연월</label><div class="ym-wrap" id="ym-chungak"></div></div>
+      <div class="field">
+        <label>월 납입액 (만원)</label>
+        <input id="chungak_mo" type="number" placeholder="0" oninput="autoCalcBal('chungak')">
+      </div>
+      <div class="field">
+        <label>현재 잔고 (만원)</label>
+        <input id="chungak_bal" type="number" placeholder="자동계산" oninput="clearAutoCalc('chungak')">
+        <div class="auto-hint" id="chungak_hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 청년도약 -->
+  <div class="sdiv"><span>청년도약계좌</span></div>
+  <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px;margin-bottom:13px">
+    <div class="g3">
+      <div class="field"><label>가입 연월</label><div class="ym-wrap" id="ym-doiyak"></div></div>
+      <div class="field">
+        <label>월 납입액 (만원)</label>
+        <input id="doiyak_mo" type="number" placeholder="0" oninput="autoCalcBal('doiyak')">
+      </div>
+      <div class="field">
+        <label>현재 잔고 (만원)</label>
+        <input id="doiyak_bal" type="number" placeholder="자동계산" oninput="clearAutoCalc('doiyak')">
+        <div class="auto-hint" id="doiyak_hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="field"><label>ETF·펀드 주식형 (만원)</label><input id="etf_stock" type="number" placeholder="0"></div>
+    <div class="field"><label>ETF·펀드 채권형 (만원)</label><input id="etf_bond" type="number" placeholder="0"></div>
+  </div>
+  <div class="g2">
+    <div class="field"><label>국내·해외 주식 (만원)</label><input id="stock" type="number" placeholder="0"></div>
+    <div class="field"><label>기타 (금·코인·달러)</label><input id="other_asset" type="number" placeholder="0"></div>
+  </div>
+
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(0)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">2/7</span><button class="btn btn-next" onclick="goTo(2)">다음 →</button></div>
+</div>
+
+<!-- ===== 3단계: 절세계좌 ===== -->
+<div class="panel" id="p2">
+  <div class="p-step">STEP 3 / 7</div>
+  <div class="p-title">절세계좌 현황</div>
+  <div class="p-desc">가입한 계좌의 토글을 켜면 금액 입력란이 활성화됩니다.</div>
+  <div class="tax-hdr"><span>계좌</span><span>가입</span><span style="text-align:right">잔고(만원)</span><span style="text-align:right">월납입(만원)</span></div>
+  <div class="toggle-row">
+    <div class="toggle-label"><span class="toggle-dot" style="background:var(--blue)"></span>ISA</div>
+    <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="isa_chk" onchange="toggleTax('isa')"><span class="slider"></span></label></div>
+    <input class="tax-inp" type="number" id="isa_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="isa_mo" placeholder="0" disabled>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label"><span class="toggle-dot" style="background:var(--teal)"></span>연금저축</div>
+    <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="pension_chk" onchange="toggleTax('pension')"><span class="slider"></span></label></div>
+    <input class="tax-inp" type="number" id="pension_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="pension_mo" placeholder="0" disabled>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label"><span class="toggle-dot" style="background:var(--purple)"></span>IRP</div>
+    <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="irp_chk" onchange="toggleTax('irp')"><span class="slider"></span></label></div>
+    <input class="tax-inp" type="number" id="irp_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="irp_mo" placeholder="0" disabled>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label"><span class="toggle-dot" style="background:var(--amber)"></span>비과세연금</div>
+    <div class="toggle-wrap"><label class="switch"><input type="checkbox" id="va_chk" onchange="toggleTax('va')"><span class="slider"></span></label></div>
+    <input class="tax-inp" type="number" id="va_bal" placeholder="0" disabled>
+    <input class="tax-inp" type="number" id="va_mo" placeholder="0" disabled>
+  </div>
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(1)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">3/7</span><button class="btn btn-next" onclick="goTo(3)">다음 →</button></div>
+</div>
+
+<!-- ===== 4단계: 목표 ===== -->
+<div class="panel" id="p3">
+  <div class="p-step">STEP 4 / 7</div>
+  <div class="p-title">재무 목표</div>
+  <div class="p-desc">1순위 목표는 필수입니다. 2순위는 선택사항입니다.</div>
+  <div class="sdiv"><span>1순위 목표</span></div>
+  <div class="g3">
+    <div class="field"><label>목표 유형</label><select id="goal1_type"><option value="">선택하세요</option><option>결혼자금</option><option>내집마련</option><option>자녀교육</option><option>은퇴준비</option><option>자산증식</option><option>기타</option></select></div>
+    <div class="field"><label>목표 시기 (년 후)</label><input id="goal1_year" type="number" placeholder="예: 5"></div>
+    <div class="field"><label>목표 금액 (만원)</label><input id="goal1_amt" type="number" placeholder="예: 10000"></div>
+  </div>
+  <div class="sdiv"><span>2순위 목표 (선택)</span></div>
+  <div class="g3">
+    <div class="field"><label>목표 유형</label><select id="goal2_type"><option value="">없음</option><option>결혼자금</option><option>내집마련</option><option>자녀교육</option><option>은퇴준비</option><option>자산증식</option><option>기타</option></select></div>
+    <div class="field"><label>목표 시기 (년 후)</label><input id="goal2_year" type="number" placeholder="예: 10"></div>
+    <div class="field"><label>목표 금액 (만원)</label><input id="goal2_amt" type="number" placeholder="예: 30000"></div>
+  </div>
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(2)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">4/7</span><button class="btn btn-next" onclick="goTo(4)">다음 →</button></div>
+</div>
+
+<!-- ===== 5단계: 성향진단 ===== -->
+
+<!-- ===== 5단계: ETF·절세계좌 교육 ===== -->
+<div class="panel" id="p4">
+  <div class="p-step">STEP 5 / 7</div>
+  <div class="p-title">투자성향 진단</div>
+  <div class="diag-intro">이제 어떤 투자자에 더 가까운지 4가지 상황으로 확인합니다.<br><strong style="color:var(--text)">정답은 없습니다.</strong> 가장 솔직한 답변이 가장 좋은 포트폴리오를 만들어줍니다.</div>
+  <div class="q-block" id="qb0">
+    <div class="q-num">Q1 · 손실 반응</div>
+    <div class="q-text">ETF에 투자한 1,000만원이 800만원이 됐습니다. 어떻게 하시겠어요?</div>
+    <div class="q-scenario">S&P500 ETF에 넣었는데 3개월 후 잔고가 800만원입니다.</div>
+    <div class="q-opts">
+      <button class="q-opt-btn" onclick="selQ(0,1,this)">즉시 전액 매도하고 적금으로 옮긴다.</button>
+      <button class="q-opt-btn" onclick="selQ(0,2,this)">절반을 팔고 나머지는 조금 더 지켜본다.</button>
+      <button class="q-opt-btn" onclick="selQ(0,3,this)">불안하지만 장기 투자니까 그냥 기다린다.</button>
+      <button class="q-opt-btn" onclick="selQ(0,4,this)">오히려 더 살 기회라고 생각해 추가 매수한다.</button>
+    </div>
+  </div>
+  <div class="q-block" id="qb1">
+    <div class="q-num">Q2 · 목표 기간</div>
+    <div class="q-text">이 돈을 언제쯤 쓸 계획인가요?</div>
+    <div class="q-opts">
+      <button class="q-opt-btn" onclick="selQ(1,1,this)">1~2년 안에 써야 한다.</button>
+      <button class="q-opt-btn" onclick="selQ(1,2,this)">3~5년 후 목표가 있다.</button>
+      <button class="q-opt-btn" onclick="selQ(1,3,this)">5~10년은 묻어둘 수 있다.</button>
+      <button class="q-opt-btn" onclick="selQ(1,4,this)">10년 이상. 노후나 먼 미래를 위한 투자다.</button>
+    </div>
+  </div>
+  <div class="q-block" id="qb2">
+    <div class="q-num">Q3 · 수익·손실 허용</div>
+    <div class="q-text">1년 후 이 포트폴리오에 기대하는 결과는?</div>
+    <div class="q-opts">
+      <button class="q-opt-btn" onclick="selQ(2,1,this)">원금이 보장되면 된다.</button>
+      <button class="q-opt-btn" onclick="selQ(2,2,this)">연 3~5% 수익, 소폭 손실(-5%)은 감수한다.</button>
+      <button class="q-opt-btn" onclick="selQ(2,3,this)">연 5~8%, 10% 손실 정도는 견딜 수 있다.</button>
+      <button class="q-opt-btn" onclick="selQ(2,4,this)">연 10% 이상 목표, 20% 손실도 감수한다.</button>
+    </div>
+  </div>
+  <div class="q-block" id="qb3">
+    <div class="q-num">Q4 · 투자 경험</div>
+    <div class="q-text">지금까지 투자해본 경험 중 가장 고수준인 것은?</div>
+    <div class="q-opts">
+      <button class="q-opt-btn" onclick="selQ(3,1,this)">예금·적금만 해봤다. 투자는 처음이다.</button>
+      <button class="q-opt-btn" onclick="selQ(3,2,this)">펀드나 ETF를 사본 적 있다.</button>
+      <button class="q-opt-btn" onclick="selQ(3,3,this)">국내 주식을 직접 사고팔아봤다.</button>
+      <button class="q-opt-btn" onclick="selQ(3,4,this)">해외주식, 파생상품 등 다양하게 투자해봤다.</button>
+    </div>
+  </div>
+  <div class="res-box" id="diag-result">
+    <div class="res-badge" id="res-badge"></div>
+    <div class="res-name" id="res-name"></div>
+    <div class="res-score" id="res-score"></div>
+    <div class="res-grid">
+      <div class="res-cell"><div class="rc-l">핵심자산(Core)</div><div class="rc-v" id="res-core"></div></div>
+      <div class="res-cell"><div class="rc-l">위성자산(Sat)</div><div class="rc-v" id="res-sat"></div></div>
+      <div class="res-cell"><div class="rc-l">연 기대수익</div><div class="rc-v" id="res-ret"></div></div>
+    </div>
+    <div class="res-desc" id="res-desc"></div>
+    <div class="mismatch" id="mismatch">⚠ <strong>경험-성향 불일치</strong><br>투자경험(예적금)에 비해 성향이 높게 나왔습니다.<br>처방: 초기 6개월 주식ETF 목표의 50% 편입 + 저변동성 ETF Core 25% + 비과세연금 병행 검토</div>
+  </div>
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(3)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">5/7</span><button class="btn btn-next" id="btn-diag-next" onclick="goTo(5)" disabled>다음 →</button></div>
+</div>
+
+<!-- ===== 6단계: 배분·연결 ===== -->
+<div class="panel" id="p5">
+  <div class="p-step">STEP 6 / 7</div>
+  <div class="p-title">월 저축 배분 및 자산 연결</div>
+  <div class="p-desc">월 저축을 목표별로 배분하고 기존 자산과 목표를 연결합니다.</div>
+  <div class="sdiv"><span>목표별 월 배분 (만원)</span></div>
+  <div id="alloc-table"></div>
+  <div style="font-size:12.6px;color:var(--text3);margin-top:6px">배분 합계: <span id="alloc-sum" style="color:var(--teal);font-weight:600">0</span>만원 / 저축가능: <span id="alloc-max" style="color:var(--text2)">—</span>만원</div>
+  <div class="sdiv" style="margin-top:20px"><span>기존 자산 → 목표 연결</span></div>
+  <div style="font-size:12.6px;color:var(--text2);margin-bottom:10px">각 자산이 어느 목표에 기여하는지 태그를 눌러 연결하세요.</div>
+  <div id="asset-link-area"></div>
+  <button class="principle-btn" onclick="showModal('modal-principle')">📐 포트폴리오 구성 5가지 원칙 보기</button>
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(5)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">6/7</span><button class="btn btn-next" onclick="goTo(6)">다음 →</button></div>
+</div>
+
+<!-- ===== 7단계: 확인·전송 ===== -->
+<div class="panel" id="p6">
+  <div class="p-step">STEP 7 / 7</div>
+  <div class="p-title">확인 및 전송</div>
+  <div class="p-desc">입력 내용을 최종 확인하고 MD 파일로 저장합니다.</div>
+
+  <div id="preview" class="preview-box">미리보기 생성 중...</div>
+
+  <!-- 전송 상태 패널 -->
+  <div class="send-status" id="send-status" style="display:none" style="display:none">
+    <div class="status-row"><div class="status-icon si-wait" id="st-word-icon">⏳</div><span id="st-word-txt">워드 문서 저장 대기 중...</span></div>
+    <div class="status-row"><div class="status-icon si-wait" id="st-mail-icon">⏳</div><span id="st-mail-txt">이메일 전송 대기 중...</span></div>
+  </div>
+
+  <div class="send-row">
+    <button class="btn btn-teal" style="flex:1" id="btn-send" onclick="doSend()">저장</button>
+    <button class="btn btn-gray" style="flex:1" onclick="doClose()">닫기</button>
+  </div>
+
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(6)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">완료</span><span></span></div>
+</div>
+
+<!-- 닫기 확인 모달 -->
+<div class="modal-overlay" id="modal-close">
+  <div class="modal">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">모든 입력 자료를 삭제합니다</div>
+    <div class="modal-desc">현재 입력된 고객 정보와 성향 진단 결과가 모두 삭제됩니다.<br>저장된 파일은 영향을 받지 않습니다.<br><br><strong style="color:#e88">계속 진행하시겠습니까?</strong></div>
+    <div class="modal-btns"><button class="btn btn-gray" onclick="hideModal('modal-close')">취소</button><button class="btn btn-red" onclick="confirmClose()">닫기</button></div>
+  </div>
+</div>
+
+<!-- 포트폴리오 원칙 모달 -->
+<div class="modal-overlay" id="modal-principle">
+  <div class="modal principle-modal">
+    <div class="pm-title">📐 포트폴리오 구성 원칙</div>
+    <div class="pm-sub">재무목표별 포트폴리오는 아래 5가지 원칙으로 설계됩니다</div>
+    <div class="pm-item"><div class="pm-num">1</div><div><div class="pm-name">Priority Rule (우선순위 원칙)</div><div class="pm-desc">투자성향·잔여기간·목표성격 3가지 기준을 각각 독립 산출한 뒤, 가장 보수적인 Core 비중을 최종값으로 확정합니다.</div></div></div>
+    <div class="pm-item"><div class="pm-num">2</div><div><div class="pm-name">Core-Satellite 구조</div><div class="pm-desc">Core(핵심자산)는 S&P500 + SCHD 2종으로 구성합니다. S&P500은 장기 성장 엔진, SCHD는 배당으로 안정성을 보완합니다. Satellite(위성자산)는 반도체·AI·인도 등 특정 섹터에 집중하여 초과수익을 추구합니다.</div></div></div>
+    <div class="pm-item"><div class="pm-num">3</div><div><div class="pm-name">Constraint Rule (제약 원칙)</div><div class="pm-desc">개별 테마 ETF는 전체의 10% 이하, Satellite 합계는 50% 이하로 제한합니다. 비트코인은 공격투자형 전용·5% 상한입니다.</div></div></div>
+    <div class="pm-item"><div class="pm-num">4</div><div><div class="pm-name">Location Rule (계좌 배치 원칙)</div><div class="pm-desc">절세계좌(ISA·연금저축·IRP·비과세연금)에는 국내 상장 ETF를 우선 배치하고, 일반계좌에는 미국 직구 ETF를 배치하여 세금 효율을 극대화합니다.</div></div></div>
+    <div class="pm-item"><div class="pm-num">5</div><div><div class="pm-name">Glide Path (목적자금 단계 전환)</div><div class="pm-desc">결혼·내집마련 등 확정 지출 목표는 잔여기간이 줄어들수록 채권 듀레이션을 자동으로 단축합니다. 목표 1년 전에는 전액 MMF·단기채로 전환하여 원금을 보호합니다.</div></div></div>
+    <div class="pm-close"><button class="btn btn-teal" onclick="hideModal('modal-principle')">확인</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+
+// ── 스티키 요약 바 업데이트 ──────────────────────────────────────
+function updateStickyBar(){
+  const income  = parseInt(document.getElementById('income')?.value)||0;
+  const savable = parseInt(document.getElementById('savable')?.value)||0;
+
+  // 총 금융자산 계산
+  let total = 0;
+  const assetIds = ['deposit','sav_bal','etf_stock','etf_bond','stock','other_asset',
+                    'chungak_bal','doiyak_bal','isa_bal','pension_bal','irp_bal','va_bal'];
+  assetIds.forEach(id=>{
+    total += parseInt(document.getElementById(id)?.value)||0;
+  });
+  // 적금 카드들
+  document.querySelectorAll('[id^="sav"][id$="_bal"]').forEach(el=>{
+    if(!assetIds.includes(el.id)) total += parseInt(el.value)||0;
+  });
+
+  const rate = income > 0 ? Math.round(savable/income*100) : 0;
+  const bar  = document.getElementById('sticky-bar');
+  const sbT  = document.getElementById('sb-total');
+  const sbS  = document.getElementById('sb-savable');
+  const sbR  = document.getElementById('sb-rate');
+
+  if(total > 0 || savable > 0){
+    if(bar)  bar.classList.add('show');
+    if(sbT)  sbT.textContent  = total.toLocaleString()+'만원';
+    if(sbS)  sbS.textContent  = savable.toLocaleString()+'만원';
+    if(sbR)  sbR.textContent  = rate+'%';
+    if(sbR)  sbR.style.color  = rate>=20?'var(--teal)':rate>=10?'var(--amber)':'#e88';
+  }
+}
+
+// ── 인트로 ───────────────────────────────────────────────────────
+
+
+// ── localStorage 복원 ────────────────────────────────────────────
+function restoreFromStorage(){
+  try{
+    const saved = localStorage.getItem('consult_autosave');
+    if(saved){
+      parseAndFill(saved);
+      document.querySelectorAll('[style*="저장된 상담"]').forEach(el=>el.remove());
+      // 알림 바 제거
+      document.querySelectorAll('div').forEach(el=>{
+        if(el.textContent.includes('저장된 상담 기록')) el.remove();
+      });
+      showToast('이전 상담 기록을 복원했습니다 ✓');
+      // 인트로에서 1단계로 이동
+      if(cur===-1){ startConsult(); }
+    }
+  }catch(e){ showToast('복원 실패: '+e.message); }
+}
+
+// ── 인트로로 이동 ─────────────────────────────────────────────────
+function goToIntro(){
+  // 현재 패널 숨기기
+  if(cur >= 0){
+    const panel = document.getElementById('p'+cur);
+    if(panel) panel.classList.remove('active');
+  }
+  cur = -1;
+  // 네비게이션 바 숨기기
+  const navWrap = document.getElementById('nav-wrap');
+  if(navWrap){ navWrap.style.opacity='0'; setTimeout(()=>{ navWrap.style.display='none'; navWrap.style.opacity='1'; },400); }
+  // 인트로 표시
+  const intro = document.getElementById('p-intro');
+  if(intro){
+    intro.style.opacity='0';
+    intro.classList.add('active');
+    setTimeout(()=>{ intro.style.transition='opacity .4s ease'; intro.style.opacity='1'; },30);
+  }
+}
+
+function startConsult(){
+  const intro   = document.getElementById('p-intro');
+  const navWrap = document.getElementById('nav-wrap');
+
+  // 네비게이션 바: display:block 하되 아직 투명
+  if(navWrap){
+    navWrap.style.display  = 'block';
+    navWrap.style.opacity  = '0';
+    navWrap.style.transition = 'opacity .5s ease';
+  }
+
+  // 인트로 페이드 아웃
+  if(intro){
+    intro.style.transition = 'opacity .42s ease, transform .42s ease';
+    intro.style.opacity    = '0';
+    intro.style.transform  = 'translateY(-10px)';
+  }
+
+  setTimeout(()=>{
+    // 인트로 숨김
+    if(intro){
+      intro.classList.remove('active');
+      intro.style.opacity   = '';
+      intro.style.transform = '';
+    }
+
+    // 1단계로 이동
+    cur = -1;
+    goTo(0);
+
+    // 네비게이션 바 페이드 인
+    setTimeout(()=>{ if(navWrap) navWrap.style.opacity='1'; }, 30);
+
+    // p0 패널 페이드 인
+    const p0 = document.getElementById('p0');
+    if(p0){
+      p0.style.opacity   = '0';
+      p0.style.transform = 'translateY(12px)';
+      p0.style.transition= 'opacity .4s ease, transform .4s ease';
+      setTimeout(()=>{
+        p0.style.opacity   = '1';
+        p0.style.transform = 'translateY(0)';
+        setTimeout(()=>{ p0.style.transition=''; }, 450);
+      }, 30);
+    }
+  }, 420);
+}
+
+// ── 교육 탭 ──────────────────────────────────────────────────────
+
+
+
+
+
+
+
+
+
+// ── 퀴즈 ─────────────────────────────────────────────────────────
+
+
+// ── 수익 시뮬레이터 ───────────────────────────────────────────────
+
+
+// ── 폭락 스토리텔링 ───────────────────────────────────────────────
+const STORY_DATA = {
+  sell:{
+    emoji:'😰',
+    title:'매도 후 적금으로 이동',
+    result:'2020년 3월 저점(660만원)에 팔아 <strong style="color:#e88">340만원 손실 확정</strong>.<br>2020년 8월 S&P500은 이미 원금을 회복했고,<br>2021년 1월에는 <strong>1,180만원</strong>이 됐습니다.<br>520만원의 추가 기회를 놓쳤습니다.',
+    color:'rgba(192,57,43,.15)',border:'rgba(192,57,43,.35)',icon:'📉'
+  },
+  half:{
+    emoji:'😟',
+    title:'절반 매도 후 관망',
+    result:'330만원 손실 확정 + 330만원 회복 혜택 일부 수령.<br>결과: 원금의 약 <strong>85% 회복</strong>.<br>만약 팔지 않았다면 <strong>1,180만원</strong>이 됐을 텐데<br>불안감이 약 250만원의 기회비용을 만들었습니다.',
+    color:'rgba(186,117,23,.12)',border:'rgba(186,117,23,.3)',icon:'📊'
+  },
+  hold:{
+    emoji:'😤',
+    title:'불안하지만 유지',
+    result:'5개월 후 원금 완전 회복. 이후 <strong style="color:var(--teal)">1,180만원</strong> 달성.<br>아무것도 하지 않은 것이 최선의 선택이었습니다.<br>장기 투자의 핵심은 <strong>흔들리지 않는 것</strong>입니다.',
+    color:'rgba(29,158,117,.12)',border:'rgba(29,158,117,.3)',icon:'✅'
+  },
+  buy:{
+    emoji:'😎',
+    title:'추가 매수 (역발상 투자)',
+    result:'500만원 추가 매수 → 총 투자 1,500만원.<br>2021년 1월 기준 평가액 <strong style="color:var(--teal)">약 1,770만원</strong>.<br>공포 속에 매수한 500만원이 추가로 약 <strong>270만원</strong> 수익.<br>워런 버핏: "남들이 공포에 떨 때 탐욕스러워져라."',
+    color:'rgba(24,95,165,.08)',border:'rgba(24,95,165,.35)',icon:'🚀'
+  }
+};
+
+
+
+// ── 절세 계산기 ───────────────────────────────────────────────────
+
+
+// ── 상태 ──────────────────────────────────────────────────────────
+let cur=-1; // -1 = 인트로 단계
+const TOTAL=7;
+const sel={};
+const dScores=[0,0,0,0];
+const dAnswers=['','','',''];
+let savingsCount=0;
+const QLABELS=[
+  ['즉시 매도','절반 매도','불안하지만 유지','추가 매수'],
+  ['1~2년','3~5년','5~10년','10년 이상'],
+  ['원금 보장','연 3~5%','연 5~8%','연 10%↑'],
+  ['예적금만','펀드·ETF','국내주식','해외주식'],
+];
+const RDATA=[
+  {min:4,max:6,name:'안정형',color:'#1d9e75',core:85,sat:15,ret:4.5,desc:'원금 안전을 최우선으로 합니다. 채권 ETF와 배당 ETF 중심의 포트폴리오를 구성합니다.'},
+  {min:7,max:9,name:'안정추구형',color:'#185fa5',core:75,sat:25,ret:5.5,desc:'소폭 손실은 감수할 수 있습니다. S&P500(40%) + SCHD(60%) 배당 중심으로 안정적 핵심 자산을 구성합니다.'},
+  {min:10,max:12,name:'위험중립형',color:'#3b6d11',core:65,sat:35,ret:6.5,desc:'S&P500(60%) + SCHD(40%) 균형 구성. Core 65% + Satellite 35% 배분을 권장합니다.'},
+  {min:13,max:14,name:'적극투자형',color:'#534AB7',core:50,sat:50,ret:7.5,desc:'S&P500(80%) + SCHD(20%) 성장 중심. Core 50% + Satellite 50% 배분을 권장합니다.'},
+  {min:15,max:16,name:'공격투자형',color:'#BA7517',core:35,sat:65,ret:8.5,desc:'S&P500(80%) + SCHD(20%) 최대 성장 중심. Core 35% + Satellite 65% 배분을 권장합니다.'},
+];
+
+// ── 연월 선택기 ───────────────────────────────────────────────────
+function buildYM(containerId, prefix){
+  const wrap=document.getElementById(containerId);
+  if(!wrap) return;
+  let yOpts='<option value="">연도</option>';
+  for(let y=2010;y<=2026;y++) yOpts+=`<option value="${y}">${y}년</option>`;
+  let mOpts='<option value="">월</option>';
+  for(let m=1;m<=12;m++) mOpts+=`<option value="${String(m).padStart(2,'0')}">${m}월</option>`;
+  wrap.innerHTML=`<select id="${prefix}_y" onchange="syncYM('${prefix}');autoCalcBal('${prefix.replace('ym-','')}')">${yOpts}</select>
+                  <select id="${prefix}_m" onchange="syncYM('${prefix}');autoCalcBal('${prefix.replace('ym-','')}')">${mOpts}</select>`;
+}
+function buildYMDynamic(containerId, prefix){
+  const wrap=document.getElementById(containerId);
+  if(!wrap) return;
+  let yOpts='<option value="">연도</option>';
+  for(let y=2010;y<=2026;y++) yOpts+=`<option value="${y}">${y}년</option>`;
+  let mOpts='<option value="">월</option>';
+  for(let m=1;m<=12;m++) mOpts+=`<option value="${String(m).padStart(2,'0')}">${m}월</option>`;
+  wrap.innerHTML=`<select id="${prefix}_y" onchange="syncYM('${prefix}')">${yOpts}</select>
+                  <select id="${prefix}_m" onchange="syncYM('${prefix}')">${mOpts}</select>`;
+}
+function syncYM(prefix){
+  const y=document.getElementById(prefix+'_y')?.value||'';
+  const m=document.getElementById(prefix+'_m')?.value||'';
+  let h=document.getElementById(prefix+'_val');
+  if(!h){h=document.createElement('input');h.type='hidden';h.id=prefix+'_val';document.body.appendChild(h);}
+  h.value=(y&&m)?`${y}-${m}`:'';
+}
+
+function getYM(prefix){
+  return document.getElementById(prefix+'_val')?.value||document.getElementById(prefix+'_y')?.value&&document.getElementById(prefix+'_m')?.value?
+    `${document.getElementById(prefix+'_y').value}-${document.getElementById(prefix+'_m').value}`:'';
+}
+function setYMById(yId,mId,val){
+  if(!val) return;
+  const parts=val.split('-');
+  if(parts.length<2) return;
+  const yEl=document.getElementById(yId);
+  const mEl=document.getElementById(mId);
+  if(yEl) yEl.value=parts[0];
+  if(mEl) mEl.value=parts[1];
+}
+
+// ── 잔고 자동계산 (납입액 × 가입 개월 수) ──────────────────────────
+function calcMonths(prefix){
+  const val=getYM('ym-'+prefix)||getYM(prefix+'_dyn');
+  if(!val) return 0;
+  const [y,m]=val.split('-').map(Number);
+  const now=new Date(2026,2,15); // 2026-03-15 기준
+  return Math.max(0,(now.getFullYear()-y)*12+(now.getMonth()+1)-m);
+}
+function autoCalcBal(prefix){
+  const balEl=document.getElementById(prefix+'_bal');
+  const moEl=document.getElementById(prefix+'_mo');
+  const hintEl=document.getElementById(prefix+'_hint');
+  if(!balEl||!moEl) return;
+  if(balEl.value&&balEl.value!='0') return; // 직접 입력 시 건너뜀
+  const mo=parseInt(moEl.value)||0;
+  const months=calcMonths(prefix);
+  if(mo>0&&months>0){
+    const est=mo*months;
+    balEl.placeholder=`자동계산: 약 ${est.toLocaleString()}만원`;
+    if(hintEl){ hintEl.textContent=`월 ${mo}만원 × ${months}개월 = 약 ${est.toLocaleString()}만원 (추정)`;hintEl.classList.add('show'); }
+  }
+}
+function clearAutoCalc(prefix){
+  const hintEl=document.getElementById(prefix+'_hint');
+  if(hintEl) hintEl.classList.remove('show');
+}
+function getEffBal(prefix){
+  const balEl=document.getElementById(prefix+'_bal');
+  const moEl=document.getElementById(prefix+'_mo');
+  if(!balEl) return 0;
+  if(balEl.value&&parseInt(balEl.value)>0) return parseInt(balEl.value);
+  // 자동계산값 사용
+  const mo=parseInt(moEl?.value)||0;
+  const months=calcMonths(prefix);
+  return mo>0&&months>0?mo*months:0;
+}
+
+// ── 적금 동적 추가 ────────────────────────────────────────────────
+function addSavings(){
+  savingsCount++;
+  const idx=savingsCount;
+  const list=document.getElementById('savings-list');
+  const card=document.createElement('div');
+  card.className='rep-card'; card.id='sav-card-'+idx;
+  card.innerHTML=`
+    <div class="rep-card-header">
+      <div class="rep-card-title">적금 ${idx}</div>
+      <button class="rep-remove" onclick="removeSavings(${idx})" title="삭제">×</button>
+    </div>
+    <div class="g3">
+      <div class="field"><label>가입 연월</label><div class="ym-wrap" id="ym-sav-dyn-${idx}"></div></div>
+      <div class="field">
+        <label>월 납입액 (만원)</label>
+        <input id="sav_dyn_${idx}_mo" type="number" placeholder="0" oninput="autoCalcSavDyn(${idx})">
+      </div>
+      <div class="field">
+        <label>현재 잔고 (만원)</label>
+        <input id="sav_dyn_${idx}_bal" type="number" placeholder="자동계산" oninput="clearSavDynHint(${idx})">
+        <div class="auto-hint" id="sav_dyn_${idx}_hint"></div>
+      </div>
+    </div>`;
+  list.appendChild(card);
+  buildYMDynamic('ym-sav-dyn-'+idx, 'sav_dyn_'+idx);
+}
+function removeSavings(idx){
+  const card=document.getElementById('sav-card-'+idx);
+  if(card) card.remove();
+  reorderSavings();
+}
+function reorderSavings(){
+  const cards=document.querySelectorAll('[id^="sav-card-"]');
+  cards.forEach((card,i)=>{
+    const t=card.querySelector('.rep-card-title');
+    if(t) t.textContent='적금 '+(i+1);
+  });
+}
+function autoCalcSavDyn(idx){
+  const balEl=document.getElementById(`sav_dyn_${idx}_bal`);
+  const moEl=document.getElementById(`sav_dyn_${idx}_mo`);
+  const hintEl=document.getElementById(`sav_dyn_${idx}_hint`);
+  if(!balEl||!moEl) return;
+  if(balEl.value&&parseInt(balEl.value)>0) return;
+  const mo=parseInt(moEl.value)||0;
+  const yEl=document.getElementById(`sav_dyn_${idx}_y`);
+  const mEl=document.getElementById(`sav_dyn_${idx}_m`);
+  if(!yEl||!mEl||!yEl.value||!mEl.value) return;
+  const y=parseInt(yEl.value); const m=parseInt(mEl.value);
+  const months=Math.max(0,(new Date().getFullYear()-y)*12+(3)-m);
+  if(mo>0&&months>0){
+    const est=mo*months;
+    balEl.placeholder=`자동계산: 약 ${est.toLocaleString()}만원`;
+    if(hintEl){hintEl.textContent=`월 ${mo}만원 × ${months}개월 ≈ ${est.toLocaleString()}만원`;hintEl.classList.add('show');}
+  }
+}
+function clearSavDynHint(idx){
+  const h=document.getElementById(`sav_dyn_${idx}_hint`);
+  if(h) h.classList.remove('show');
+}
+function getEffSavDyn(idx){
+  const balEl=document.getElementById(`sav_dyn_${idx}_bal`);
+  if(balEl&&parseInt(balEl.value)>0) return parseInt(balEl.value);
+  const moEl=document.getElementById(`sav_dyn_${idx}_mo`);
+  const yEl=document.getElementById(`sav_dyn_${idx}_y`);
+  const mEl=document.getElementById(`sav_dyn_${idx}_m`);
+  if(!moEl||!yEl||!mEl||!yEl.value||!mEl.value) return 0;
+  const mo=parseInt(moEl.value)||0;
+  const months=Math.max(0,(2026-parseInt(yEl.value))*12+3-parseInt(mEl.value));
+  return mo>0&&months>0?mo*months:0;
+}
+
+
+// ── 누락 함수 보완 ────────────────────────────────────────────────
+function setYM(prefix, val){
+  if(!val) return;
+  const parts = val.split('-');
+  if(parts.length < 2) return;
+  const yEl = document.getElementById(prefix+'_y');
+  const mEl = document.getElementById(prefix+'_m');
+  if(yEl) yEl.value = parts[0];
+  if(mEl) mEl.value = parts[1];
+  syncYM(prefix);
+}
+
+function autoCalcSav(idx){
+  const mo = parseInt(document.getElementById('sav'+idx+'_mo')?.value)||0;
+  const bal = document.getElementById('sav'+idx+'_bal');
+  const hint = document.getElementById('sav'+idx+'_hint');
+  if(!bal || !hint) return;
+  if(bal.value){ hint.textContent=''; return; }
+  if(!mo){ hint.textContent=''; return; }
+  const ym = getYM('sav'+idx);
+  if(!ym){ hint.textContent=''; return; }
+  const [y,m] = ym.split('-').map(Number);
+  const now = new Date();
+  const months = (now.getFullYear()-y)*12 + (now.getMonth()+1-m);
+  if(months > 0){
+    const calc = mo * months;
+    hint.textContent = '가입 '+months+'개월 × '+mo+'만원 = 약 '+calc.toLocaleString()+'만원';
+  }
+}
+
+function getBalOrCalc(type){
+  const el = document.getElementById(type+'_bal');
+  const bal = parseInt(el?.value)||0;
+  if(bal > 0) return bal;
+  const mo = parseInt(document.getElementById(type+'_mo')?.value)||0;
+  const ym = getYM(type);
+  if(mo > 0 && ym){
+    const [y,m] = ym.split('-').map(Number);
+    const now = new Date();
+    const months = (now.getFullYear()-y)*12+(now.getMonth()+1-m);
+    if(months > 0) return mo * months;
+  }
+  return mo;
+}
+
+// ── 단계 이동 ─────────────────────────────────────────────────────
+function goTo(n){
+  // 현재 패널 비활성화 (p-intro 또는 p0~p7)
+  const curPanel = cur >= 0
+    ? document.getElementById('p'+cur)
+    : document.getElementById('p-intro');
+  if(curPanel) curPanel.classList.remove('active');
+  cur=n;
+  const nextPanel = document.getElementById('p'+cur);
+  if(nextPanel) nextPanel.classList.add('active');
+  updateProg();
+  if(n===5) buildAlloc();
+  if(n===6) buildPreview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProg(){
+  if(cur < 0) return; // 인트로 단계에서는 진행바 업데이트 안 함
+  for(let i=0;i<7;i++){
+    const pip=document.getElementById('pip'+i);
+    const lbl=document.getElementById('lbl'+i);
+    const pl=document.getElementById('pl'+i);
+    pip.className='pip'+(i<cur?' done':i===cur?' active':'');
+    if(lbl) lbl.className='plabel'+(i<cur?' done':i===cur?' active':'');
+    if(pl) pl.className='pline'+(i<cur?' done':'');
+  }
+}
+function tog1(k,v,el){
+  sel[k]=v;
+  el.closest('.btn-group').querySelectorAll('.btn-opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function calcAge(){
+  const b=document.getElementById('birth').value;
+  if(!b) return;
+  const yr=parseInt(b.split('-')[0]);
+  if(yr>1900&&yr<2030) document.getElementById('age').value=(new Date().getFullYear()-yr)+'세';
+}
+function toggleTax(id){
+  const on=document.getElementById(id+'_chk').checked;
+  document.getElementById(id+'_bal').disabled=!on;
+  document.getElementById(id+'_mo').disabled=!on;
+  if(!on){document.getElementById(id+'_bal').value='';document.getElementById(id+'_mo').value='';}
+}
+
+
+// ── 교육 관련 ─────────────────────────────────────────────────────
+
+
+
+
+
+
+
+
+
+
+// ── 성향 진단 ─────────────────────────────────────────────────────
+function selQ(qi,score,el){
+  dScores[qi]=score; dAnswers[qi]=QLABELS[qi][score-1];
+  const blk=document.getElementById('qb'+qi);
+  blk.querySelectorAll('.q-opt-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected'); blk.classList.add('answered');
+  calcDiag();
+}
+function calcDiag(){
+  const answered=dScores.filter(s=>s>0).length;
+  document.getElementById('btn-diag-next').disabled=(answered<4);
+  if(answered<4) return;
+  const total=dScores.reduce((a,b)=>a+b,0);
+  const r=RDATA.find(x=>total>=x.min&&total<=x.max)||RDATA[2];
+  const box=document.getElementById('diag-result');
+  box.className='res-box show';
+  box.style.background=r.color+'22'; box.style.border=`1px solid ${r.color}55`;
+  document.getElementById('res-badge').textContent=r.name;
+  document.getElementById('res-badge').style.cssText=`background:${r.color};color:#fff`;
+  document.getElementById('res-name').textContent=r.name; document.getElementById('res-name').style.color=r.color;
+  document.getElementById('res-score').textContent=`점수 ${total}점 / 16점 만점`; document.getElementById('res-score').style.color=r.color;
+  document.getElementById('res-core').textContent=r.core+'%'; document.getElementById('res-sat').textContent=r.sat+'%'; document.getElementById('res-ret').textContent=r.ret+'%';
+  document.getElementById('res-desc').textContent=r.desc;
+  document.getElementById('mismatch').className='mismatch'+(dScores[3]===1&&total>=13?' show':'');
+  sel['risk_name']=r.name; sel['risk_score']=total; sel['risk_core']=r.core; sel['risk_sat']=r.sat;
+  sel['exp']=QLABELS[3][dScores[3]-1]||''; sel['mismatch']=(dScores[3]===1&&total>=13)?'Y':'N';
+}
+
+// ── 배분 ──────────────────────────────────────────────────────────
+function buildAlloc(){
+  const goals=[];
+  const g1=document.getElementById('goal1_type').value;
+  if(g1) goals.push({label:g1+' (1순위)',id:'alloc_g1'});
+  const g2=document.getElementById('goal2_type').value;
+  if(g2&&g2!=='없음'&&g2!=='') goals.push({label:g2+' (2순위)',id:'alloc_g2'});
+  const savable=parseInt(document.getElementById('savable').value)||0;
+  document.getElementById('alloc-max').textContent=savable+'만원';
+  let html='';
+  goals.forEach(g=>{
+    html+=`<div class="alloc-row">
+      <div style="font-size:14.9px;color:var(--text2)">${g.label}</div>
+      <input class="alloc-inp" type="number" id="${g.id}" placeholder="0" oninput="updSum()">
+      <div style="font-size:12.6px;color:var(--text3);text-align:right" id="${g.id}_pct">—</div>
+    </div>`;
+  });
+  if(!html) html='<div style="font-size:13.8px;color:var(--text3)">4단계에서 목표를 설정해주세요.</div>';
+  document.getElementById('alloc-table').innerHTML=html;
+  buildAssetLink(goals);
+}
+function updSum(){
+  const savable=parseInt(document.getElementById('savable').value)||1;
+  let sum=0;
+  ['alloc_g1','alloc_g2'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    const v=parseInt(el.value)||0; sum+=v;
+    const p=document.getElementById(id+'_pct'); if(p) p.textContent=Math.round(v/savable*100)+'%';
+  });
+  document.getElementById('alloc-sum').textContent=sum;
+  document.getElementById('alloc-sum').style.color=sum>(parseInt(document.getElementById('savable').value)||0)?'#e88':'var(--teal)';
+}
+function buildAssetLink(goals){
+  // 동적 적금 카드들 수집
+  const dynamicSavings=[];
+  for(let i=1;i<=savingsCount;i++){
+    if(document.getElementById('sav-card-'+i)){
+      const bal=getEffSavDyn(i);
+      if(bal>0) dynamicSavings.push({label:`적금${i}`,val:bal});
+    }
+  }
+  const assets=[
+    {label:'예금', val:parseInt(document.getElementById('deposit').value)||0},
+    ...dynamicSavings,
+    {label:'청약저축', val:getEffBal('chungak')},
+    {label:'청년도약', val:getEffBal('doiyak')},
+    {label:'ETF주식형', val:parseInt(document.getElementById('etf_stock').value)||0},
+    {label:'ETF채권형', val:parseInt(document.getElementById('etf_bond').value)||0},
+    {label:'주식', val:parseInt(document.getElementById('stock').value)||0},
+  ].filter(a=>a.val>0);
+  if(!assets.length){ document.getElementById('asset-link-area').innerHTML='<div style="font-size:13.8px;color:var(--text3)">연결할 기존 자산이 없습니다.</div>'; return; }
+  const gls=goals.map(g=>g.label.replace(' (1순위)','').replace(' (2순위)',''));
+  gls.push('비상금 마련');
+  let html='';
+  assets.forEach((a,ai)=>{
+    html+=`<div style="margin-bottom:10px">
+      <div style="font-size:12.6px;color:var(--text2);margin-bottom:4px">${a.label} <span style="color:var(--teal)">${a.val.toLocaleString()}만원</span></div><div>`;
+    gls.forEach((gl,gi)=>{
+      const isEmg=(gl==='비상금 마련');
+      html+=`<span class="asset-tag" id="tag_${ai}_${gi}" onclick="togTag(${ai},${gi},${isEmg})" style="${isEmg?'border-color:rgba(186,117,23,.4);color:var(--amber)':''}">${gl}</span>`;
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('asset-link-area').innerHTML=html;
+}
+function togTag(ai,gi,isEmg){
+  const el=document.getElementById(`tag_${ai}_${gi}`);
+  el.classList.toggle(isEmg?'linked-amber':'linked');
+}
+
+// ── 미리보기 ──────────────────────────────────────────────────────
+function buildPreview(){
+  const today = document.getElementById('cdate')?.value || new Date().toISOString().slice(0,10);
+  const name  = document.getElementById('name')?.value  || '(미입력)';
+  const birth = document.getElementById('birth')?.value || '';
+  const age   = document.getElementById('age')?.value   || '';
+  const v = id => document.getElementById(id)?.value || '0';
+
+  // ── 적금 목록 수집 ──
+  const savRows = [];
+  document.querySelectorAll('[id^="sav-card-"]').forEach(card => {
+    const idx = card.id.replace('sav-card-','');
+    const mo  = v(`sav${idx}_mo`);
+    const bal = (() => {
+      const direct = parseInt(v(`sav${idx}_bal`))||0;
+      if(direct > 0) return direct;
+      const moInt = parseInt(mo)||0;
+      const ym = getYM(`sav${idx}`);
+      if(moInt>0 && ym){
+        const [y,m]=ym.split('-').map(Number);
+        const now=new Date();
+        const months=(now.getFullYear()-y)*12+(now.getMonth()+1-m);
+        if(months>0) return moInt*months;
+      }
+      return moInt;
+    })();
+    const date = getYM(`sav${idx}`) || '';
+    if(parseInt(mo)>0 || bal>0)
+      savRows.push(`| 적금${savRows.length+1} | ${bal.toLocaleString()} | ${mo} | ${date} |`);
+  });
+
+  // ── 절세계좌 ──
+  const taxAccts = [
+    {id:'isa',     label:'ISA'},
+    {id:'pension', label:'연금저축'},
+    {id:'irp',     label:'IRP'},
+    {id:'va',      label:'비과세연금'},
+  ].map(a => {
+    const on = document.getElementById(a.id+'_chk')?.checked;
+    const bal = v(a.id+'_bal');
+    const mo  = v(a.id+'_mo');
+    return `| ${a.label} | ${on?'가입':'미가입'} | ${on?bal:'—'} | ${on?mo:'—'} |`;
+  });
+
+  // ── 기존 금융자산 ──
+  const assetRows = [
+    ['예금',       v('deposit'),    '—',  '—'],
+    ['ETF(주식형)', v('etf_stock'), '—',  '—'],
+    ['ETF(채권형)', v('etf_bond'),  '—',  '—'],
+    ['주식',        v('stock'),     '—',  '—'],
+    ['청약저축',    v('chungak_bal'), v('chungak_mo'), getYM('chungak')],
+    ['청년도약',    v('doiyak_bal'), '—',  getYM('doiyak')],
+    ['기타',        v('other_asset'),'—',  '—'],
+  ].filter(r=>parseInt(r[1])>0)
+   .map(r=>`| ${r[0]} | ${parseInt(r[1]).toLocaleString()} | ${r[2]} | ${r[3]} |`);
+
+  const qA = dAnswers.map((a,i)=>`Q${i+1}: ${a||'미선택'}`).join(' / ');
+  const isaOn = document.getElementById('isa_chk')?.checked;
+  const penOn = document.getElementById('pension_chk')?.checked;
+  const irpOn = document.getElementById('irp_chk')?.checked;
+  const vaOn  = document.getElementById('va_chk')?.checked;
+
+  const txt =
+`[1차 상담 기록] v6.0
+상담일: ${today} | 담당: ${document.getElementById('agent')?.value||''}
+
+## 고객 기본정보
+| 항목 | 값 |
+|------|-----|
+| 성명 | ${name} |
+| 생년월일 | ${birth} |
+| 나이 | ${age} |
+| 성별 | ${sel['gen']||''} |
+| 혼인 | ${sel['mar']||''} |
+| 자녀 | ${sel['child']||''} |
+| 부양 | ${sel['dep']||''} |
+
+## 소득·지출
+| 항목 | 금액(만원) |
+|------|-----------|
+| 월 세후소득 | ${v('income')} |
+| 월 고정지출 | ${v('expense')} |
+| 월 저축가능 | ${v('savable')} |
+| 대출 잔액 | ${v('loan')} |
+| 대출 금리 | ${v('loanrate')}% |
+
+## 기존 금융자산
+| 자산명 | 잔고(만원) | 월납입(만원) | 가입연월 |
+|--------|-----------|------------|---------|
+| 예금 | ${v('deposit')} | — | — |
+${savRows.join('\n')}
+${assetRows.filter(r=>!r.includes('예금')).join('\n')}
+
+## 절세계좌
+| 계좌 | 가입여부 | 잔고(만원) | 월납입(만원) |
+|------|---------|-----------|------------|
+${taxAccts.join('\n')}
+
+## 재무목표
+| 순위 | 목표 | 기간 | 목표금액(만원) |
+|------|------|------|--------------|
+| 1순위 | ${document.getElementById('goal1_type')?.value||''} | ${v('goal1_year')}년 후 | ${v('goal1_amt')} |
+| 2순위 | ${document.getElementById('goal2_type')?.value||'없음'} | ${v('goal2_year')}년 후 | ${v('goal2_amt')} |
+
+## 투자성향 진단
+| 항목 | 내용 |
+|------|------|
+| 진단 성향 | ${sel['risk_name']||'(미진단)'} |
+| 점수 | ${sel['risk_score']||0}점/16점 |
+| 투자 경험 | ${sel['exp']||''} |
+| 답변 이력 | ${qA} |
+| Core 비중 | ${sel['risk_core']||''}% |
+| Satellite 비중 | ${sel['risk_sat']||''}% |
+| 경험-성향 불일치 | ${sel['mismatch']||'N'}${sel['mismatch']==='Y'?' → 처방: 초기 주식ETF 50% + 저변동성ETF 확대 + 비과세연금 병행':''} |
+
+---
+> 본 데이터는 v4 설계 원칙(Priority, Constraint, Location, Glide Path)에 따라 분석되어야 함.`;
+
+  document.getElementById('preview').textContent = txt;
+  return txt;
+}
+
+// ── 전송 ──────────────────────────────────────────────────────────
+function doSend(){
+  const nameVal = (document.getElementById('name')?.value||'').trim();
+  if(!nameVal){
+    showToast('입력된 내용이 없습니다. 인트로 화면으로 이동합니다.');
+    setTimeout(()=>goToIntro(), 1200);
+    return;
+  }
+  const txt  = buildPreview();
+  const date = (document.getElementById('cdate')?.value || new Date().toISOString().slice(0,10)).replace(/-/g,'');
+
+  // ── Dual-Track: 모든 입력값 JSON으로 직렬화 ──────────────
+  const snapshot = {};
+  // 모든 input / select 수집
+  document.querySelectorAll('input:not([type=file]):not([type=checkbox]),select').forEach(el=>{
+    if(el.id) snapshot[el.id] = el.value;
+  });
+  // 체크박스
+  document.querySelectorAll('input[type=checkbox]').forEach(el=>{
+    if(el.id) snapshot[el.id] = el.checked;
+  });
+  // sel 객체 (버튼 선택값)
+  snapshot['__sel__'] = sel;
+  // 성향 진단 답변
+  snapshot['__diagAnswers__'] = dAnswers;
+  snapshot['__diagScores__']  = dScores;
+  // 연월 선택기 값
+  ['chungak','doiyak'].forEach(p=>{
+    const el = document.getElementById(p+'_date');
+    if(el) snapshot[p+'_date'] = el.value;
+  });
+  // 적금 카드
+  const savCards = [];
+  document.querySelectorAll('[id^="sav-card-"]').forEach(card=>{
+    const idx = card.id.replace('sav-card-','');
+    const el_date = document.getElementById('sav'+idx+'_date');
+    savCards.push({
+      mo:  document.getElementById('sav'+idx+'_mo')?.value  || '0',
+      bal: document.getElementById('sav'+idx+'_bal')?.value || '0',
+      date: el_date?.value || '',
+    });
+  });
+  snapshot['__savCards__'] = savCards;
+
+  const jsonStr = JSON.stringify(snapshot, null, 2);
+  const fullMD  = txt + '\n\n<!--JSON_DATA\n' + jsonStr + '\nJSON_DATA-->';
+
+  const filename = 'consultation_' + nameVal + '_' + date + '.md';
+  const blob = new Blob([fullMD], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+
+  // localStorage 자동 저장
+  try { localStorage.setItem('consult_autosave', fullMD); } catch(e){}
+
+  showToast(filename + ' 저장 완료 ✓ — 카카오톡으로 관리자에게 전송하세요');
+}
+// ── 닫기 ──────────────────────────────────────────────────────────
+function doClose(){
+  const nameVal = (document.getElementById('name')?.value||'').trim();
+  const previewTxt = document.getElementById('preview')?.textContent||'';
+  const hasData = nameVal.length > 0 && previewTxt.length > 80;
+
+  if(!hasData){
+    // 입력 내용 없으면 모달 없이 바로 인트로
+    goToIntro();
+    return;
+  }
+  // 내용 있으면 MD 자동 저장 후 확인 모달
+  const date=(document.getElementById('cdate')?.value||new Date().toISOString().slice(0,10)).replace(/-/g,'');
+  downloadFile('consultation_'+nameVal+'_'+date+'.md', previewTxt);
+  showModal('modal-close');
+}
+function confirmClose(){
+  hideModal('modal-close'); resetAll(); showToast('모든 입력 자료가 삭제됐습니다.');
+  // 초기화 후 인트로로 복귀
+  setTimeout(()=>{
+    cur=-1;
+    const allPanels=document.querySelectorAll('.panel');
+    allPanels.forEach(p=>p.classList.remove('active'));
+    const intro=document.getElementById('p-intro');
+    if(intro) intro.classList.add('active');
+  },300);
+}
+function resetAll(){
+  document.querySelectorAll('input:not([type=checkbox]):not([type=file]):not([type=hidden])').forEach(el=>{
+    if(el.id==='cdate') el.value=new Date().toISOString().slice(0,10);
+    else el.value='';
+  });
+  document.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.querySelectorAll('input[type=checkbox]').forEach(el=>el.checked=false);
+  ['isa','pension','irp','va'].forEach(toggleTax);
+  document.querySelectorAll('.btn-opt').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.q-opt-btn').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.q-block').forEach(el=>el.classList.remove('answered'));
+  for(let k in sel) delete sel[k];
+  for(let i=0;i<4;i++){dScores[i]=0;dAnswers[i]='';}
+  document.getElementById('diag-result').className='res-box';
+  document.getElementById('mismatch').className='mismatch';
+  document.getElementById('btn-diag-next').disabled=true;
+  document.getElementById('preview').textContent='미리보기 생성 중...';
+  // 네비게이션 바 숨기기 (인트로로 돌아갈 때)
+  const navWrap = document.getElementById('nav-wrap');
+  if(navWrap){ navWrap.style.display='none'; navWrap.style.opacity='0'; }
+
+
+  document.getElementById('send-status').style.display='none';
+  // 동적 적금 초기화
+  document.getElementById('savings-list').innerHTML=''; savingsCount=0;
+  // 연월 초기화
+  ['chungak','doiyak'].forEach(p=>{
+    const y=document.getElementById('ym-'+p+'_y'); const m=document.getElementById('ym-'+p+'_m');
+    if(y) y.value=''; if(m) m.value='';
+    syncYM('ym-'+p);
+    const h=document.getElementById(p+'_hint'); if(h) h.classList.remove('show');
+  });
+  // 적금 1개 기본 생성
+  addSavings();
+  // localStorage 초기화
+  try{ localStorage.removeItem('consult_autosave'); }catch(e){}
+}
+
+// ── MD 불러오기 ───────────────────────────────────────────────────
+function loadMD(event){
+  const file=event.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){ parseAndFill(e.target.result); showToast('상담 내용을 불러왔습니다 ✓'); goTo(0); };
+  reader.readAsText(file,'utf-8'); event.target.value='';
+}
+function parseAndFill(txt){
+  // ── 1. JSON 트랙 우선 시도 ─────────────────────────────
+  const jsonMatch = txt.match(/<!--JSON_DATA\n([\s\S]*?)\nJSON_DATA-->/);
+  if(jsonMatch){
+    try{
+      const snap = JSON.parse(jsonMatch[1]);
+
+      // 모든 input / select 복원
+      Object.entries(snap).forEach(([id, val])=>{
+        if(id.startsWith('__')) return;
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(el.type==='checkbox') el.checked = !!val;
+        else el.value = val || '';
+        // 절세계좌 토글 동기화
+        if(id.endsWith('_chk')) toggleTax(id.replace('_chk',''));
+      });
+
+      // sel 객체 복원 (버튼 선택)
+      if(snap['__sel__']){
+        Object.assign(sel, snap['__sel__']);
+        // 버튼 UI 동기화
+        Object.entries(snap['__sel__']).forEach(([k,v])=>{
+          document.querySelectorAll(`.btn-opt`).forEach(btn=>{
+            if(btn.getAttribute('onclick')?.includes(`'${k}'`) &&
+               btn.getAttribute('onclick')?.includes(`'${v}'`)){
+              btn.classList.add('sel');
+            }
+          });
+        });
+      }
+
+      // 성향 진단 복원
+      if(snap['__diagAnswers__']){
+        snap['__diagAnswers__'].forEach((a,i)=>{ dAnswers[i]=a; });
+        snap['__diagScores__']?.forEach((s,i)=>{ dScores[i]=s; });
+        calcDiag();
+        // Q 버튼 UI 복원
+        snap['__diagScores__']?.forEach((score,qi)=>{
+          if(score<=0) return;
+          const opts = document.querySelectorAll(`#qb${qi} .q-opt-btn`);
+          if(opts[score-1]) opts[score-1].classList.add('selected');
+          document.getElementById('qb'+qi)?.classList.add('answered');
+        });
+      }
+
+      // 연월 복원
+      ['chungak','doiyak'].forEach(p=>{
+        if(snap[p+'_date']) setYM(p, snap[p+'_date']);
+      });
+
+      // 적금 카드 복원
+      if(snap['__savCards__']?.length){
+        document.getElementById('savings-list').innerHTML='';
+        savingsCount=0;
+        snap['__savCards__'].forEach(card=>{
+          addSavings();
+          const idx=savingsCount;
+          setV('sav'+idx+'_mo',  card.mo);
+          setV('sav'+idx+'_bal', card.bal);
+          if(card.date) setYM('sav'+idx, card.date);
+        });
+      }
+
+      calcAge();
+      showToast('JSON 데이터로 복원됐습니다 ✓');
+      return;
+    }catch(e){
+      console.warn('JSON 복원 실패, Regex 백업으로 전환:', e);
+    }
+  }
+
+  // ── 2. Regex 백업 트랙 ────────────────────────────────────
+  function ex(re){ const m=txt.match(re); return m?(m[1]||'').trim():''; }
+  setV('name',  ex(/성명:\s*\|\s*([^\|]+)\|/) || ex(/성명:\s*([^\|]+)/));
+  setV('birth', ex(/생년월일:\s*\|\s*([^\|]+)\|/) || ex(/생년월일:\s*([^\|]+)/));
+  setV('agent', ex(/담당:\s*([^\n]+)/));
+  setV('cdate', ex(/상담일:\s*([^\|]+)/));
+  calcAge();
+  setV('income',  ex(/월 세후소득\s*\|\s*([\d]+)/));
+  setV('expense', ex(/월 고정지출\s*\|\s*([\d]+)/));
+  setV('savable', ex(/월 저축가능\s*\|\s*([\d]+)/));
+  setV('loan',    ex(/대출 잔액\s*\|\s*([\d]+)/));
+  setV('deposit', ex(/예금\s*\|\s*([\d]+)/));
+  setV('etf_stock', ex(/ETF\(주식형\)\s*\|\s*([\d]+)/));
+  setV('etf_bond',  ex(/ETF\(채권형\)\s*\|\s*([\d]+)/));
+  setV('stock',     ex(/^주식\s*\|\s*([\d]+)/m));
+  setV('other_asset', ex(/기타\s*\|\s*([\d]+)/));
+  setV('chungak_bal', ex(/청약저축\s*\|\s*([\d]+)/));
+  setV('chungak_mo',  ex(/청약저축\s*\|\s*[\d]+\s*\|\s*([\d]+)/));
+  setYM('chungak', ex(/청약저축\s*\|[^\|]*\|[^\|]*\|\s*([0-9]{4}-[0-9]{2})/));
+  setV('doiyak_bal', ex(/청년도약\s*\|\s*([\d]+)/));
+  setYM('doiyak', ex(/청년도약\s*\|[^\|]*\|[^\|]*\|\s*([0-9]{4}-[0-9]{2})/));
+
+  // 절세계좌
+  ['isa','pension','irp','va'].forEach(id=>{
+    const lbl={'isa':'ISA','pension':'연금저축','irp':'IRP','va':'비과세연금'}[id];
+    const m = txt.match(new RegExp(lbl+'\\s*\\|\\s*(가입|미가입)'));
+    if(m && m[1]==='가입'){
+      document.getElementById(id+'_chk').checked=true; toggleTax(id);
+      setV(id+'_bal', ex(new RegExp(lbl+'\\s*\\|[^|]*\\|\\s*([\\d]+)')));
+      setV(id+'_mo',  ex(new RegExp(lbl+'\\s*\\|[^|]*\\|[^|]*\\|\\s*([\\d]+)')));
+    }
+  });
+
+  // 목표
+  const g1 = txt.match(/1순위\s*\|\s*([^\|]+)\|/);
+  if(g1) setSel('goal1_type', g1[1].trim());
+  setV('goal1_year', ex(/1순위\s*\|[^\|]*\|\s*([\d]+)년/));
+  setV('goal1_amt',  ex(/1순위\s*\|[^\|]*\|[^\|]*\|\s*([\d]+)/));
+  const g2 = txt.match(/2순위\s*\|\s*([^\|없음]+)\|/);
+  if(g2 && g2[1].trim() !== '없음') setSel('goal2_type', g2[1].trim());
+  setV('goal2_year', ex(/2순위\s*\|[^\|]*\|\s*([\d]+)년/));
+  setV('goal2_amt',  ex(/2순위\s*\|[^\|]*\|[^\|]*\|\s*([\d]+)/));
+
+  showToast('Regex로 복원됐습니다 ✓');
+}
+
+// ── 파일 다운로드 ─────────────────────────────────────────────────
+function downloadFile(filename,text,mime){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:mime||'text/plain;charset=utf-8'}));
+  a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ── 모달 ──────────────────────────────────────────────────────────
+function showModal(id){ document.getElementById(id).classList.add('show'); }
+function hideModal(id){ document.getElementById(id).classList.remove('show'); }
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.modal-overlay').forEach(el=>{
+    el.addEventListener('click',function(e){ if(e.target===this) hideModal(this.id); });
+  });
+});
+
+// ── 토스트 ────────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ── 초기화 ────────────────────────────────────────────────────────
+document.getElementById('cdate').value=new Date().toISOString().slice(0,10);
+// localStorage 자동복원 (로컬 실행 환경)
+try{
+  const saved = localStorage.getItem('consult_autosave');
+  if(saved && saved.length > 100){
+    const restoreBar = document.createElement('div');
+    restoreBar.style.cssText = 'position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#122030;border:1px solid #2a4560;border-radius:10px;padding:10px 16px;font-size:12px;color:#8fa8c0;z-index:999;display:flex;align-items:center;gap:12px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4)';
+    restoreBar.innerHTML = `💾 저장된 상담 기록이 있습니다.&nbsp;<button onclick="restoreFromStorage()" style="padding:4px 12px;background:#1d9e75;color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer">불러오기</button>&nbsp;<button onclick="this.parentElement.remove()" style="padding:4px 10px;background:transparent;color:#5a7a96;border:1px solid #2a4560;border-radius:6px;font-size:11px;cursor:pointer">닫기</button>`;
+    document.body.appendChild(restoreBar);
+  }
+}catch(e){}
+
+
+buildYM('ym-chungak','ym-chungak');
+buildYM('ym-doiyak','ym-doiyak');
+// 기본 적금 1개 자동 추가
+addSavings();
+</script>
+</body>
+</html>
