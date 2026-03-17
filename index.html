@@ -358,7 +358,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="pip" id="pip3" onclick="goTo(3)">4</div><div class="pline" id="pl3"></div>
   <div class="pip" id="pip4" onclick="goTo(4)">5</div><div class="pline" id="pl4"></div>
   <div class="pip" id="pip5" onclick="goTo(5)">6</div><div class="pline" id="pl5"></div>
-  <div class="pip" id="pip6" onclick="goTo(6)">7</div>
+  <div class="pip" id="pip6" onclick="goTo(6)">7</div><div class="pline" id="pl6"></div>
+  <div class="pip" id="pip7" onclick="goTo(7)">8</div>
 </div>
 <div class="plabels">
   <span class="plabel active" id="lbl0">기본정보</span>
@@ -367,7 +368,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <span class="plabel" id="lbl3">목표</span>
   <span class="plabel" id="lbl4">성향진단</span>
   <span class="plabel" id="lbl5">배분·연결</span>
-  <span class="plabel" id="lbl6">확인·저장</span>
+  <span class="plabel" id="lbl6">포트선택</span>
+  <span class="plabel" id="lbl7">확인·저장</span>
 </div>
 </div>
 
@@ -728,16 +730,156 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     </div>
     <div style="font-size:11.5px;color:var(--teal);margin-top:8px" id="bonus-step6-note"></div>
   </div>
+  <!-- ── 신규 절세계좌 월납입 설정 (시뮬레이션 사전 계산용) ── -->
+  <div class="sdiv" style="margin-top:20px"><span>절세계좌 신규 월납입 설정</span></div>
+  <div style="font-size:12.6px;color:var(--text2);margin-bottom:10px">신규 가입할 절세계좌의 월 납입액을 입력하세요. 미입력 시 해당 계좌는 시뮬레이션에서 제외됩니다.</div>
+  <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px;margin-bottom:6px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+
+      <!-- 연금저축 -->
+      <div class="field">
+        <label style="font-size:11.5px;color:var(--teal)">연금저축 월납(만원)</label>
+        <input type="number" id="new_pension_mo" placeholder="미가입 시 비워두기"
+          oninput="updateYearend('pension')"
+          style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-size:13.8px">
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <span id="pension_yearend_txt" style="font-size:10.5px;color:var(--text3)">월납 입력 후 잔여한도 표시</span>
+          <label id="pension_yearend_chk_wrap" style="display:none;align-items:center;gap:4px;cursor:pointer;font-size:10.5px;color:var(--teal)">
+            성과급으로 채움
+            <input type="checkbox" id="pension_yearend_chk" onchange="calcSimResults()"
+              style="width:13px;height:13px;accent-color:var(--teal);cursor:pointer">
+          </label>
+        </div>
+      </div>
+
+      <!-- IRP -->
+      <div class="field">
+        <label style="font-size:11.5px;color:var(--purple)">IRP 월납(만원)</label>
+        <input type="number" id="new_irp_mo" placeholder="미가입 시 비워두기"
+          oninput="updateYearend('irp')"
+          style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-size:13.8px">
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <span id="irp_yearend_txt" style="font-size:10.5px;color:var(--text3)">월납 입력 후 잔여한도 표시</span>
+          <label id="irp_yearend_chk_wrap" style="display:none;align-items:center;gap:4px;cursor:pointer;font-size:10.5px;color:var(--purple)">
+            성과급으로 채움
+            <input type="checkbox" id="irp_yearend_chk" onchange="calcSimResults()"
+              style="width:13px;height:13px;accent-color:var(--purple);cursor:pointer">
+          </label>
+        </div>
+      </div>
+
+      <!-- 변액연금 -->
+      <div class="field">
+        <label style="font-size:11.5px;color:var(--amber)">변액연금 월납(만원)</label>
+        <input type="number" id="new_va_mo" placeholder="미가입 시 비워두기"
+          oninput="calcSimResults()"
+          style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-size:13.8px">
+        <div style="font-size:10.5px;color:var(--text3);margin-top:6px">10년↑ 유지 시 운용수익 비과세</div>
+      </div>
+
+    </div>
+    <!-- 시뮬 미리보기 -->
+    <div id="sim-preview" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border2);display:none">
+      <div style="font-size:11.5px;color:var(--teal);font-weight:600;margin-bottom:6px">시뮬레이션 사전 계산 결과</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px">
+        <div style="background:var(--bg2);border-radius:6px;padding:8px">
+          <div style="color:var(--text3);margin-bottom:4px" id="sim-g1-label">목표1</div>
+          <div>낙관: <span id="sim-g1-opt" style="color:var(--teal);font-weight:600">—</span>만원</div>
+          <div>기대: <span id="sim-g1-exp" style="color:var(--blue);font-weight:600">—</span>만원</div>
+          <div>보수: <span id="sim-g1-con" style="color:var(--amber);font-weight:600">—</span>만원</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:6px;padding:8px">
+          <div style="color:var(--text3);margin-bottom:4px" id="sim-g2-label">목표2</div>
+          <div>낙관: <span id="sim-g2-opt" style="color:var(--teal);font-weight:600">—</span>만원</div>
+          <div>기대: <span id="sim-g2-exp" style="color:var(--blue);font-weight:600">—</span>만원</div>
+          <div>보수: <span id="sim-g2-con" style="color:var(--amber);font-weight:600">—</span>만원</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="sdiv" style="margin-top:20px"><span>기존 자산 → 목표 연결</span></div>
   <div style="font-size:12.6px;color:var(--text2);margin-bottom:10px">각 자산이 어느 목표에 기여하는지 태그를 눌러 연결하세요.</div>
   <div id="asset-link-area"></div>
   <button class="principle-btn" onclick="showModal('modal-principle')">📐 포트폴리오 구성 5가지 원칙 보기</button>
-  <div class="nav"><button class="btn btn-prev" onclick="goTo(5)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">6/7</span><button class="btn btn-next" onclick="goTo(6)">다음 →</button></div>
+  <div class="nav"><button class="btn btn-prev" onclick="goTo(4)">← 이전</button><span style="font-size:12.6px;color:var(--text3)">6/8</span><button class="btn btn-next" onclick="goTo(6)">다음 →</button></div>
 </div>
 
 <!-- ===== 7단계: 확인·전송 ===== -->
+
+<!-- ===== 7단계: 포트폴리오 ETF 선택 ===== -->
 <div class="panel" id="p6">
-  <div class="p-step">STEP 7 / 7</div>
+  <div class="p-step">STEP 7 / 8</div>
+  <div class="p-title">포트폴리오 ETF 선택</div>
+  <div class="p-desc">기본 포트폴리오에서 제외할 ETF를 선택하세요. 체크된 항목이 최종 포트폴리오에 포함됩니다.</div>
+
+  <!-- 탭 -->
+  <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border2)">
+    <button id="etf-tab-1"
+      style="flex:1;padding:9px 0;font-size:13.8px;font-weight:600;background:none;border:none;cursor:pointer;color:var(--blue);border-bottom:2px solid var(--blue);margin-bottom:-2px;transition:all .2s"
+      onclick="switchEtfTab(1)">
+      <span id="etf-tab-1-lbl">1순위 목표</span>
+    </button>
+    <button id="etf-tab-2"
+      style="flex:1;padding:9px 0;font-size:13.8px;font-weight:600;background:none;border:none;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s"
+      onclick="switchEtfTab(2)">
+      <span id="etf-tab-2-lbl">2순위 목표</span>
+    </button>
+  </div>
+
+  <!-- 목표1 ETF 리스트 -->
+  <div id="etf-panel-1">
+    <div id="etf-goal1-title" style="font-size:12.6px;color:var(--text2);margin-bottom:10px"></div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12.6px">
+        <thead>
+          <tr style="background:var(--bg3);color:var(--text3)">
+            <th style="padding:8px 6px;text-align:center;width:36px">포함</th>
+            <th style="padding:8px 6px;text-align:left;width:50px">구분</th>
+            <th style="padding:8px 6px;text-align:left">상품명</th>
+            <th style="padding:8px 6px;text-align:left;white-space:nowrap">카테고리</th>
+            <th style="padding:8px 6px;text-align:left">역할</th>
+            <th style="padding:8px 6px;text-align:right;white-space:nowrap">1Y</th>
+            <th style="padding:8px 6px;text-align:right;white-space:nowrap">3Y</th>
+          </tr>
+        </thead>
+        <tbody id="etf-tbody-1"></tbody>
+      </table>
+    </div>
+    <div id="etf-g1-summary" style="margin-top:10px;font-size:11.5px;color:var(--teal)"></div>
+  </div>
+
+  <!-- 목표2 ETF 리스트 -->
+  <div id="etf-panel-2" style="display:none">
+    <div id="etf-goal2-title" style="font-size:12.6px;color:var(--text2);margin-bottom:10px"></div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12.6px">
+        <thead>
+          <tr style="background:var(--bg3);color:var(--text3)">
+            <th style="padding:8px 6px;text-align:center;width:36px">포함</th>
+            <th style="padding:8px 6px;text-align:left;width:50px">구분</th>
+            <th style="padding:8px 6px;text-align:left">상품명</th>
+            <th style="padding:8px 6px;text-align:left;white-space:nowrap">카테고리</th>
+            <th style="padding:8px 6px;text-align:left">역할</th>
+            <th style="padding:8px 6px;text-align:right;white-space:nowrap">1Y</th>
+            <th style="padding:8px 6px;text-align:right;white-space:nowrap">3Y</th>
+          </tr>
+        </thead>
+        <tbody id="etf-tbody-2"></tbody>
+      </table>
+    </div>
+    <div id="etf-g2-summary" style="margin-top:10px;font-size:11.5px;color:var(--teal)"></div>
+  </div>
+
+  <div class="nav">
+    <button class="btn btn-prev" onclick="goTo(5)">← 이전</button>
+    <span style="font-size:12.6px;color:var(--text3)">7/8</span>
+    <button class="btn btn-next" onclick="goTo(7)">다음 →</button>
+  </div>
+</div>
+
+<div class="panel" id="p7">
+  <div class="p-step">STEP 8 / 8</div>
   <div class="p-title">확인 및 전송</div>
   <div class="p-desc">입력 내용을 최종 확인하고 MD 파일로 저장합니다.</div>
 
@@ -772,7 +914,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="modal principle-modal">
     <div class="pm-title">📐 포트폴리오 구성 원칙</div>
     <div class="pm-sub">재무목표별 포트폴리오는 아래 5가지 원칙으로 설계됩니다</div>
-    <div class="pm-item"><div class="pm-num">1</div><div><div class="pm-name">Priority Rule (우선순위 원칙)</div><div class="pm-desc">투자성향·잔여기간·목표성격 3가지 기준을 각각 독립 산출한 뒤, 가장 보수적인 Core 비중을 최종값으로 확정합니다.</div></div></div>
+    <div class="pm-item"><div class="pm-num">1</div><div><div class="pm-name">Core 비중 룩업 테이블</div><div class="pm-desc">투자성향 × 잔여기간 조합으로 Core 비중을 직접 확정합니다. 여기에 목표 성격 보정(확정+10%p / 반확정+5%p / 유연 0%p)을 가산하여 최종 Core 비중을 결정합니다.</div></div></div>
     <div class="pm-item"><div class="pm-num">2</div><div><div class="pm-name">Core-Satellite 구조</div><div class="pm-desc">Core(핵심자산)는 S&P500 + SCHD 2종으로 구성합니다. S&P500은 장기 성장 엔진, SCHD는 배당으로 안정성을 보완합니다. Satellite(위성자산)는 반도체·AI·인도 등 특정 섹터에 집중하여 초과수익을 추구합니다.</div></div></div>
     <div class="pm-item"><div class="pm-num">3</div><div><div class="pm-name">Constraint Rule (제약 원칙)</div><div class="pm-desc">개별 테마 ETF는 전체의 10% 이하, Satellite 합계는 50% 이하로 제한합니다. 비트코인은 공격투자형 전용·5% 상한입니다.</div></div></div>
     <div class="pm-item"><div class="pm-num">4</div><div><div class="pm-name">Location Rule (계좌 배치 원칙)</div><div class="pm-desc">절세계좌(ISA·연금저축·IRP·비과세연금)에는 국내 상장 ETF를 우선 배치하고, 일반계좌에는 미국 직구 ETF를 배치하여 세금 효율을 극대화합니다.</div></div></div>
@@ -785,6 +927,287 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 <script>
 
+
+
+// ── ETF 포트폴리오 데이터 ────────────────────────────────────────
+// 성향·기간에 따라 기본 포트폴리오를 결정하는 룩업 테이블 기반 ETF 유니버스
+const ETF_UNIVERSE = {
+  // 목표기간 5년 미만: 미국 70% + 한국 30%
+  short: [
+    {id:'TIGER_SP500',  cat:'Core',    name:'TIGER 미국S&P500',       category:'핵심성장', role:'포트폴리오 엔진', r1y:'12.5%', r3y:'8.5%',  account:'ISA'},
+    {id:'SOL_SCHD',     cat:'Core',    name:'SOL 미국배당다우존스',    category:'배당성장', role:'현금흐름·안정',  r1y:'8.2%',  r3y:'5.5%',  account:'ISA'},
+    {id:'TIGER_NASDAQ', cat:'Sat',     name:'TIGER 미국나스닥100',     category:'성장(공격)',role:'기술주 초과수익',r1y:'18.4%', r3y:'11.0%', account:'ISA'},
+    {id:'TIGER_HEALTH', cat:'Sat',     name:'TIGER 미국헬스케어',      category:'섹터(방어)',role:'변동성 완충',    r1y:'7.5%',  r3y:'8.0%',  account:'ISA'},
+    {id:'KODEX_SEMI',   cat:'KR',      name:'KODEX 반도체',            category:'한국(섹터)',role:'AI·반도체 국내', r1y:'52.0%', r3y:'12.75%',account:'일반계좌'},
+  ],
+  // 목표기간 5년 이상: 미국 100%
+  long: [
+    {id:'TIGER_SP500',  cat:'Core',    name:'TIGER 미국S&P500',       category:'핵심성장', role:'포트폴리오 엔진',r1y:'12.5%', r3y:'8.5%',  account:'연금·IRP'},
+    {id:'SOL_SCHD',     cat:'Core',    name:'SOL 미국배당다우존스',    category:'배당성장', role:'배당복리·방어',  r1y:'8.2%',  r3y:'5.5%',  account:'연금·IRP'},
+    {id:'TIGER_NASDAQ', cat:'Sat',     name:'TIGER 미국나스닥100',     category:'성장(공격)',role:'기술주 장기성장',r1y:'18.4%', r3y:'11.0%', account:'연금저축'},
+    {id:'TIGER_SEMI',   cat:'Sat',     name:'TIGER 미국반도체NV',      category:'섹터(공격)',role:'AI·반도체 집중', r1y:'25.1%', r3y:'12.75%',account:'일반계좌'},
+    {id:'TIGER_VEA',    cat:'Sat',     name:'TIGER 선진국MSCI',        category:'지역(안정)',role:'미국 외 분산',   r1y:'6.8%',  r3y:'6.5%',  account:'연금저축'},
+    {id:'VA',           cat:'VA',      name:'BNP카디프변액연금',        category:'비과세연금',role:'절세·자동운용', r1y:'—',     r3y:'—',     account:'변액연금'},
+  ]
+};
+
+const CAT_COLORS = {
+  Core: 'var(--blue)',
+  Sat:  'var(--teal)',
+  KR:   '#BA7517',
+  VA:   'var(--purple)',
+};
+
+// 현재 ETF 선택 상태
+let etfSelection = { g1: {}, g2: {} };
+
+function buildEtfPanel(){
+  const g1Year = parseInt(document.getElementById('goal1_year')?.value)||0;
+  const g2Year = parseInt(document.getElementById('goal2_year')?.value)||0;
+  const g1Type = document.getElementById('goal1_type')?.value||'목표1';
+  const g2Type = document.getElementById('goal2_type')?.value||'';
+
+  // 탭 레이블 — 실제 목표명 + 기간 표기
+  const tab1Label = (g1Type||'1순위 목표') + (g1Year ? ' · ' + g1Year + '년' : '');
+  const hasG2 = g2Type && g2Type !== '없음' && g2Year > 0;
+  const tab2Label = hasG2
+    ? (g2Type) + ' · ' + g2Year + '년'
+    : '2순위 목표 없음';
+
+  document.getElementById('etf-tab-1-lbl').textContent = tab1Label;
+  document.getElementById('etf-tab-2-lbl').textContent = tab2Label;
+
+  // 탭2 활성/비활성 — style 속성 완전 초기화 후 재설정
+  const t2el = document.getElementById('etf-tab-2');
+  if(hasG2){
+    t2el.style.opacity       = '1';
+    t2el.style.pointerEvents = 'auto';
+    t2el.style.cursor        = 'pointer';
+  } else {
+    t2el.style.opacity       = '0.35';
+    t2el.style.pointerEvents = 'none';
+    t2el.style.cursor        = 'default';
+  }
+
+  // 목표1 포트폴리오 렌더
+  const list1 = g1Year > 0 && g1Year < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+  renderEtfTable('etf-tbody-1', 'etf-g1-summary', list1, 'g1', g1Type, g1Year);
+  document.getElementById('etf-goal1-title').textContent =
+    (g1Type||'1순위 목표') + (g1Year ? ' (' + g1Year + '년 후)' : '') + ' — 기본 포트폴리오';
+
+  // 목표2 포트폴리오 렌더
+  if(hasG2){
+    const list2 = g2Year < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+    renderEtfTable('etf-tbody-2', 'etf-g2-summary', list2, 'g2', g2Type, g2Year);
+    document.getElementById('etf-goal2-title').textContent =
+      g2Type + ' (' + g2Year + '년 후) — 기본 포트폴리오';
+  } else {
+    document.getElementById('etf-goal2-title').textContent = '2순위 목표가 설정되지 않았습니다.';
+    document.getElementById('etf-tbody-2').innerHTML =
+      '<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text3)">2순위 재무목표를 먼저 입력해 주세요.</td></tr>';
+    document.getElementById('etf-g2-summary').textContent = '';
+  }
+
+  switchEtfTab(1);
+}
+
+function renderEtfTable(tbodyId, summaryId, etfList, goalKey, goalType, goalYear){
+  const tbody = document.getElementById(tbodyId);
+  if(!tbody) return;
+
+  // 초기 선택 상태 — 처음 진입 시 전체 선택
+  if(Object.keys(etfSelection[goalKey]).length === 0){
+    etfList.forEach(e => { etfSelection[goalKey][e.id] = true; });
+  }
+
+  tbody.innerHTML = etfList.map((e,i) => {
+    const checked = etfSelection[goalKey][e.id] !== false;
+    const rowBg = i%2===0 ? '' : 'background:rgba(255,255,255,.03)';
+    const catColor = CAT_COLORS[e.cat] || 'var(--text3)';
+    const dimmed = checked ? '' : 'opacity:0.4;';
+    return `<tr style="${rowBg}${dimmed}transition:opacity .2s" id="etf-row-${goalKey}-${e.id}">
+      <td style="padding:9px 6px;text-align:center">
+        <input type="checkbox" ${checked?'checked':''} onchange="toggleEtf('${goalKey}','${e.id}',this.checked,'${summaryId}')"
+          style="width:15px;height:15px;accent-color:var(--teal);cursor:pointer">
+      </td>
+      <td style="padding:9px 6px">
+        <span style="font-size:10.5px;font-weight:600;color:${catColor};background:${catColor}22;padding:2px 7px;border-radius:4px;white-space:nowrap">${e.cat}</span>
+      </td>
+      <td style="padding:9px 6px;font-weight:600;color:var(--text);white-space:nowrap">${e.name}</td>
+      <td style="padding:9px 6px;color:var(--text2);white-space:nowrap">${e.category}</td>
+      <td style="padding:9px 6px;color:var(--text3);font-size:11.5px">${e.role}</td>
+      <td style="padding:9px 6px;text-align:right;color:var(--teal);white-space:nowrap">${e.r1y}</td>
+      <td style="padding:9px 6px;text-align:right;color:var(--blue);white-space:nowrap">${e.r3y}</td>
+    </tr>`;
+  }).join('');
+
+  updateEtfSummary(summaryId, goalKey, etfList);
+}
+
+function toggleEtf(goalKey, etfId, checked, summaryId){
+  etfSelection[goalKey][etfId] = checked;
+  const row = document.getElementById('etf-row-' + goalKey + '-' + etfId);
+  if(row) row.style.opacity = checked ? '1' : '0.4';
+  const etfList = goalKey === 'g1'
+    ? (parseInt(document.getElementById('goal1_year')?.value)||0) < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long
+    : (parseInt(document.getElementById('goal2_year')?.value)||0) < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+  updateEtfSummary(summaryId, goalKey, etfList);
+}
+
+function updateEtfSummary(summaryId, goalKey, etfList){
+  const selected = etfList.filter(e => etfSelection[goalKey][e.id] !== false);
+  const excluded = etfList.filter(e => etfSelection[goalKey][e.id] === false);
+  const el = document.getElementById(summaryId);
+  if(!el) return;
+  if(excluded.length === 0){
+    el.textContent = '✓ 전체 ' + selected.length + '개 ETF 포함 — 제외 없음';
+    el.style.color = 'var(--teal)';
+  } else {
+    el.textContent = '포함 ' + selected.length + '개 / 제외 ' + excluded.length + '개: ' + excluded.map(e=>e.name).join(', ');
+    el.style.color = 'var(--amber)';
+  }
+}
+
+function switchEtfTab(n){
+  // 탭2 비활성 상태면 탭1 강제 유지
+  const t2disabled = document.getElementById('etf-tab-2').style.pointerEvents === 'none';
+  if(n === 2 && t2disabled) return;
+
+  document.getElementById('etf-panel-1').style.display = n===1 ? '' : 'none';
+  document.getElementById('etf-panel-2').style.display = n===2 ? '' : 'none';
+
+  const t1 = document.getElementById('etf-tab-1');
+  const t2 = document.getElementById('etf-tab-2');
+
+  // 탭1 활성/비활성
+  t1.style.borderBottom = n===1 ? '2px solid var(--blue)' : '2px solid transparent';
+  t1.querySelector('span').style.color = n===1 ? 'var(--blue)' : 'var(--text3)';
+
+  // 탭2: 비활성 상태가 아닐 때만 색상 변경
+  if(!t2disabled){
+    t2.style.borderBottom = n===2 ? '2px solid var(--blue)' : '2px solid transparent';
+    t2.querySelector('span').style.color = n===2 ? 'var(--blue)' : 'var(--text3)';
+  }
+}
+
+// ── 연말 잔여한도 표시 및 체크박스 제어 ────────────────────────
+function updateYearend(type){
+  const limits = { pension: 600, irp: 300 };
+  const colors  = { pension: 'var(--teal)', irp: 'var(--purple)' };
+  const mo = parseInt(document.getElementById('new_'+type+'_mo')?.value)||0;
+  const limit = limits[type];
+  const remain = Math.max(0, limit - mo * 12);
+  const txt  = document.getElementById(type+'_yearend_txt');
+  const wrap = document.getElementById(type+'_yearend_chk_wrap');
+  if(!txt || !wrap) return;
+  if(mo <= 0){
+    txt.textContent = '월납 입력 후 잔여한도 표시';
+    txt.style.color = 'var(--text3)';
+    wrap.style.display = 'none';
+    const chk = document.getElementById(type+'_yearend_chk');
+    if(chk) chk.checked = false;
+  } else if(remain <= 0){
+    txt.textContent = '연간 한도 ' + limit + '만원 충족';
+    txt.style.color = colors[type];
+    wrap.style.display = 'none';
+  } else {
+    txt.textContent = '잔여한도 ' + remain + '만원을';
+    txt.style.color = 'var(--text3)';
+    wrap.style.display = 'flex';
+  }
+  calcSimResults();
+}
+
+// ── 시뮬레이션 사전 계산 ─────────────────────────────────────────
+function calcSimResults(){
+  const g1Year = parseInt(document.getElementById('goal1_year')?.value)||0;
+  const g2Year = parseInt(document.getElementById('goal2_year')?.value)||0;
+  const g1Amt  = parseInt(document.getElementById('goal1_amt')?.value)||0;
+  const g2Amt  = parseInt(document.getElementById('goal2_amt')?.value)||0;
+  const g1Type = document.getElementById('goal1_type')?.value||'';
+  const g2Type = document.getElementById('goal2_type')?.value||'';
+  const mo1    = parseInt(document.getElementById('alloc_g1')?.value)||0;
+  const mo2    = parseInt(document.getElementById('alloc_g2')?.value)||0;
+  const bonus  = parseInt(document.getElementById('bonus_annual')?.value)||0;
+  const chungak= parseInt(document.getElementById('chungak_bal')?.value)||0;
+
+  // 신규 절세계좌 월납
+  const penMo = parseInt(document.getElementById('new_pension_mo')?.value)||0;
+  const irpMo = parseInt(document.getElementById('new_irp_mo')?.value)||0;
+  const vaMo  = parseInt(document.getElementById('new_va_mo')?.value)||0;
+
+  // 체크박스 상태로 연말 추가납 결정
+  const penChk = document.getElementById('pension_yearend_chk')?.checked || false;
+  const irpChk = document.getElementById('irp_yearend_chk')?.checked || false;
+  const penYE  = penChk ? Math.max(0, 600 - penMo*12) : 0;
+  const irpYE_val = irpChk ? Math.max(0, 300 - irpMo*12) : 0;
+
+  if(!g1Year || !mo1) {
+    document.getElementById('sim-preview').style.display = 'none';
+    return {};
+  }
+
+  // bonusAlloc 계산
+  const totalMo = mo1+mo2||1;
+  const bRatio1 = mo1/totalMo;
+  const bonus1 = Math.round(bonus * bRatio1);
+  const bonus2 = bonus - bonus1;
+
+  // ISA 잔여 성과급 (목표2용) — 체크박스 선택된 항목만 연말납 차감
+  const pensionYE = penYE;
+  const irpYE2    = irpYE_val;
+  const isaBonus  = Math.max(0, bonus2 - pensionYE - irpYE2);
+
+  // FV 헬퍼 (월납 + 연말 일시납)
+  function fvCalc(monthly, annualBonus, rateAnnual, years){
+    if(years<=0) return 0;
+    const mr = rateAnnual/100/12;
+    const ar = rateAnnual/100;
+    const n  = years*12;
+    const fvM = mr>0 ? monthly*((Math.pow(1+mr,n)-1)/mr) : monthly*n;
+    let fvB = 0;
+    for(let y=1;y<=years;y++) fvB += annualBonus*Math.pow(1+ar, years-y);
+    return Math.round(fvM + fvB);
+  }
+
+  // 목표1 — 내집마련형 (청약 잔고 포함)
+  const chungakFV = y => Math.round(chungak * Math.pow(1.03, y));
+  const g1 = {
+    optimistic:   fvCalc(mo1, bonus1, 9.50, g1Year) + chungakFV(g1Year),
+    expected:     fvCalc(mo1, bonus1, 7.50, g1Year) + chungakFV(g1Year),
+    conservative: fvCalc(mo1, bonus1, 5.50, g1Year) + chungakFV(g1Year),
+    target: g1Amt
+  };
+
+  // 목표2 — 자산증식형 (알파+1.0%p 적용, 연금+IRP+ISA잔여)
+  let g2 = { optimistic:0, expected:0, conservative:0, target:g2Amt };
+  if(g2Year>0 && mo2>0){
+    const rates2 = [[11.13,'optimistic'],[9.13,'expected'],[7.13,'conservative']];
+    rates2.forEach(([r,key])=>{
+      g2[key] = fvCalc(penMo, pensionYE, r, g2Year)
+              + fvCalc(irpMo, irpYE2,    r, g2Year)
+              + fvCalc(vaMo,  0,          r, g2Year)
+              + fvCalc(0,     isaBonus,   r, g2Year);
+    });
+  }
+
+  // 미리보기 업데이트
+  const fmt = v => v>0 ? v.toLocaleString() : '—';
+  const sp = document.getElementById('sim-preview');
+  if(sp){
+    sp.style.display = 'block';
+    document.getElementById('sim-g1-label').textContent = g1Type||'목표1';
+    document.getElementById('sim-g1-opt').textContent = fmt(g1.optimistic);
+    document.getElementById('sim-g1-exp').textContent = fmt(g1.expected);
+    document.getElementById('sim-g1-con').textContent = fmt(g1.conservative);
+    document.getElementById('sim-g2-label').textContent = g2Type||'목표2';
+    document.getElementById('sim-g2-opt').textContent = fmt(g2.optimistic);
+    document.getElementById('sim-g2-exp').textContent = fmt(g2.expected);
+    document.getElementById('sim-g2-con').textContent = fmt(g2.conservative);
+  }
+
+  return { goal1: g1, goal2: g2 };
+}
 
 // ── 스티키 요약 바 업데이트 ──────────────────────────────────────
 function updateBonusAlloc(){
@@ -1244,12 +1667,13 @@ function goTo(n){
   if(nextPanel) nextPanel.classList.add('active');
   updateProg();
   if(n===5) buildAlloc();
-  if(n===6) buildPreview();
+  if(n===6) buildEtfPanel();
+  if(n===7) buildPreview();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function updateProg(){
   if(cur < 0) return; // 인트로 단계에서는 진행바 업데이트 안 함
-  for(let i=0;i<7;i++){
+  for(let i=0;i<8;i++){
     const pip=document.getElementById('pip'+i);
     const lbl=document.getElementById('lbl'+i);
     const pl=document.getElementById('pl'+i);
@@ -1348,6 +1772,7 @@ function updSum(){
   document.getElementById('alloc-sum').textContent=sum;
   document.getElementById('alloc-sum').style.color=sum>(parseInt(document.getElementById('savable').value)||0)?'#e88':'var(--teal)';
   updateBonusAlloc(); // 목표 배분 변경 시 성과급 배분도 재계산
+  calcSimResults();   // 시뮬레이션 사전 계산 재실행
 }
 function buildAssetLink(goals){
   // 동적 적금 카드들 수집
@@ -1493,6 +1918,29 @@ ${taxAccts.join('\n')}
 | 1순위 | ${document.getElementById('goal1_type')?.value||''} | ${v('goal1_year')}년 후 | ${v('goal1_amt')} |
 | 2순위 | ${document.getElementById('goal2_type')?.value||'없음'} | ${v('goal2_year')}년 후 | ${v('goal2_amt')} |
 
+## 절세계좌 신규 월납 설정
+| 계좌 | 월납입(만원) | 연말 잔여납입(만원) | 연말성과급 채움 |
+|------|------------|-----------------|-------------|
+| 연금저축 | ${document.getElementById('new_pension_mo')?.value||'미입력'} | ${document.getElementById('new_pension_mo')?.value ? Math.max(0,600-(parseInt(document.getElementById('new_pension_mo')?.value)||0)*12) : '—'} | ${document.getElementById('pension_yearend_chk')?.checked ? '✓ 체크됨' : '미체크'} |
+| IRP | ${document.getElementById('new_irp_mo')?.value||'미입력'} | ${document.getElementById('new_irp_mo')?.value ? Math.max(0,300-(parseInt(document.getElementById('new_irp_mo')?.value)||0)*12) : '—'} | ${document.getElementById('irp_yearend_chk')?.checked ? '✓ 체크됨' : '미체크'} |
+| 변액연금 | ${document.getElementById('new_va_mo')?.value||'미입력'} | — | — |
+
+## 포트폴리오 ETF 선택
+${(()=>{
+  const g1Year = parseInt(document.getElementById('goal1_year')?.value)||0;
+  const g2Year = parseInt(document.getElementById('goal2_year')?.value)||0;
+  const list1 = g1Year > 0 && g1Year < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+  const list2 = g2Year > 0 && g2Year < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+  const ex1 = list1.filter(e => etfSelection.g1[e.id] === false).map(e=>e.name);
+  const ex2 = list2.filter(e => etfSelection.g2[e.id] === false).map(e=>e.name);
+  const in1 = list1.filter(e => etfSelection.g1[e.id] !== false).map(e=>e.name);
+  const in2 = list2.filter(e => etfSelection.g2[e.id] !== false).map(e=>e.name);
+  return `| 목표 | 포함 ETF | 제외 ETF |
+|------|---------|---------|
+| 1순위 (${document.getElementById('goal1_type')?.value||''}) | ${in1.join(', ')||'전체'} | ${ex1.length>0?ex1.join(', '):'없음'} |
+| 2순위 (${document.getElementById('goal2_type')?.value||''}) | ${in2.join(', ')||'전체'} | ${ex2.length>0?ex2.join(', '):'없음'} |`;
+})()}
+
 ## 성과급 투자 계획
 ${(()=>{
   const bonus = parseInt(document.getElementById('bonus_annual')?.value)||0;
@@ -1599,6 +2047,30 @@ function doSend(){
     ratio1_pct: Math.round(bRatio1*100),
     ratio2_pct: Math.round(bRatio2*100),
   };
+
+  // 신규 절세계좌 월납 스냅샷
+  snapshot['new_pension_mo']       = document.getElementById('new_pension_mo')?.value || '';
+  snapshot['new_pension_yearend']  = document.getElementById('pension_yearend_chk')?.checked
+    ? String(Math.max(0, 600 - (parseInt(document.getElementById('new_pension_mo')?.value)||0)*12)) : '0';
+  snapshot['new_irp_mo']           = document.getElementById('new_irp_mo')?.value || '';
+  snapshot['new_irp_yearend']      = document.getElementById('irp_yearend_chk')?.checked
+    ? String(Math.max(0, 300 - (parseInt(document.getElementById('new_irp_mo')?.value)||0)*12)) : '0';
+  snapshot['new_va_mo']            = document.getElementById('new_va_mo')?.value || '';
+
+  // ETF 선택 결과 직렬화
+  const g1Year = parseInt(document.getElementById('goal1_year')?.value)||0;
+  const g2Year = parseInt(document.getElementById('goal2_year')?.value)||0;
+  const list1 = g1Year > 0 && g1Year < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+  const list2 = g2Year > 0 && g2Year < 10 ? ETF_UNIVERSE.short : ETF_UNIVERSE.long;
+  snapshot['__etfSelection__'] = {
+    goal1_included: list1.filter(e => etfSelection.g1[e.id] !== false).map(e => e.id),
+    goal1_excluded: list1.filter(e => etfSelection.g1[e.id] === false).map(e => ({id:e.id, name:e.name})),
+    goal2_included: list2.filter(e => etfSelection.g2[e.id] !== false).map(e => e.id),
+    goal2_excluded: list2.filter(e => etfSelection.g2[e.id] === false).map(e => ({id:e.id, name:e.name})),
+  };
+
+  // 시뮬레이션 사전 계산값 직렬화
+  snapshot['__simResults__'] = calcSimResults();
 
   const jsonStr = JSON.stringify(snapshot, null, 2);
   const fullMD  = txt + '\n\n<!--JSON_DATA\n' + jsonStr + '\nJSON_DATA-->';
