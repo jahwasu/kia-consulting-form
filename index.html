@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>1차 상담 입력 폼 v6.0 | 기아차지부 법률재무상담센터</title>
+<title>1차 상담 입력 폼 v6.1 | 기아차지부 법률재무상담센터</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 :root{
@@ -261,12 +261,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 
 /* ── 스토리텔링 ── */
-.story-opts{display:flex;flex-direction:column;gap:7px}
+.opts{display:flex;flex-direction:column;gap:7px}
 
-.story-opt:hover:not(:disabled){border-color:var(--blue);color:var(--text);background:rgba(24,95,165,.08)}
-.story-opt.chosen{border-color:var(--blue);background:rgba(24,95,165,.08);color:var(--text)}
+.opt:hover:not(:disabled){border-color:var(--blue);color:var(--text);background:rgba(24,95,165,.08)}
+.opt.chosen{border-color:var(--blue);background:rgba(24,95,165,.08);color:var(--text)}
 
-.story-result-box.show{display:block}
+.result-box.show{display:block}
 
 
 
@@ -512,6 +512,32 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="field"><label>대출 금리 (%)</label><input id="loanrate" type="number" placeholder="0.0" step="0.1"></div>
   </div>
 
+  <div class="sdiv"><span>연간 성과급 · 특별 수입</span></div>
+  <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px;margin-bottom:4px">
+    <div class="g2">
+      <div class="field">
+        <label>연간 성과급 (만원) <span style="color:var(--text3);font-size:11px">— 세후 예상액</span></label>
+        <input id="bonus_annual" type="number" placeholder="0" oninput="updateBonusAlloc()">
+      </div>
+      <div class="field">
+        <label>성과급 수령 시기</label>
+        <select id="bonus_month" onchange="updateBonusAlloc()">
+          <option value="1">1월 (연초)</option>
+          <option value="2">2월</option>
+          <option value="3">3월 (1분기 말)</option>
+          <option value="6">6월 (상반기)</option>
+          <option value="12">12월 (연말)</option>
+          <option value="0">불규칙</option>
+        </select>
+      </div>
+    </div>
+    <div id="bonus-alloc-area" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">📌 목표별 성과급 배분 — 재무목표 입력 후 자동 산출됩니다</div>
+      <div id="bonus-alloc-table"></div>
+      <div style="font-size:11.5px;color:var(--teal);margin-top:6px">▸ 성과급은 수령 월부터 <strong>6개월 분할</strong>로 각 목표 계좌에 투입됩니다</div>
+    </div>
+  </div>
+
   <div class="sdiv"><span>기존 금융자산</span></div>
   <div class="field"><label>예금 잔고 (만원)</label><input id="deposit" type="number" oninput="updateStickyBar()" placeholder="0"></div>
 
@@ -694,6 +720,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="sdiv"><span>목표별 월 배분 (만원)</span></div>
   <div id="alloc-table"></div>
   <div style="font-size:12.6px;color:var(--text3);margin-top:6px">배분 합계: <span id="alloc-sum" style="color:var(--teal);font-weight:600">0</span>만원 / 저축가능: <span id="alloc-max" style="color:var(--text2)">—</span>만원</div>
+
+  <div class="sdiv" style="margin-top:18px"><span>목표별 연간 성과급 배분</span></div>
+  <div id="bonus-step6-area" style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px">
+    <div id="bonus-step6-table">
+      <div style="font-size:12.6px;color:var(--text3)">성과급 금액과 재무목표를 먼저 입력하면 여기에 자동 산출됩니다.</div>
+    </div>
+    <div style="font-size:11.5px;color:var(--teal);margin-top:8px" id="bonus-step6-note"></div>
+  </div>
   <div class="sdiv" style="margin-top:20px"><span>기존 자산 → 목표 연결</span></div>
   <div style="font-size:12.6px;color:var(--text2);margin-bottom:10px">각 자산이 어느 목표에 기여하는지 태그를 눌러 연결하세요.</div>
   <div id="asset-link-area"></div>
@@ -753,6 +787,62 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 
 // ── 스티키 요약 바 업데이트 ──────────────────────────────────────
+function updateBonusAlloc(){
+  const bonus = parseInt(document.getElementById('bonus_annual')?.value)||0;
+  const bonusMonth = parseInt(document.getElementById('bonus_month')?.value)||1;
+  const g1 = document.getElementById('goal1_type')?.value||'';
+  const g2 = document.getElementById('goal2_type')?.value||'';
+  const alloc_g1 = parseInt(document.getElementById('alloc_g1')?.value)||0;
+  const alloc_g2 = parseInt(document.getElementById('alloc_g2')?.value)||0;
+  const savable = parseInt(document.getElementById('savable')?.value)||1;
+
+  const areaStep2 = document.getElementById('bonus-alloc-area');
+  const tableStep2 = document.getElementById('bonus-alloc-table');
+  const tableStep6 = document.getElementById('bonus-step6-table');
+  const noteStep6  = document.getElementById('bonus-step6-note');
+
+  if(bonus <= 0){ if(areaStep2) areaStep2.style.display='none'; return; }
+  if(areaStep2) areaStep2.style.display='block';
+
+  // 목표별 비중으로 성과급 배분 (월 납입 비중 기준)
+  const totalMo = alloc_g1 + alloc_g2;
+  const ratio1 = totalMo > 0 ? alloc_g1/totalMo : 0.6;
+  const ratio2 = totalMo > 0 ? alloc_g2/totalMo : 0.4;
+  const b1 = Math.round(bonus * ratio1);
+  const b2 = bonus - b1;
+  const mo_b1 = Math.round(b1/6); // 6개월 분할
+  const mo_b2 = Math.round(b2/6);
+
+  const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const startM = bonusMonth > 0 ? bonusMonth - 1 : 0;
+  const endM = (startM + 5) % 12;
+  const periodStr = bonusMonth > 0
+    ? `${months[startM]}~${months[endM]} (6개월 분할)`
+    : '수령 후 6개월 분할';
+
+  const rows = [];
+  if(g1) rows.push({name: g1+' (1순위)', amt: b1, mo: mo_b1});
+  if(g2 && g2!=='없음' && g2!=='') rows.push({name: g2+' (2순위)', amt: b2, mo: mo_b2});
+
+  const makeTable = (rows) => `
+    <div style="display:grid;grid-template-columns:1fr 80px 90px 90px;gap:6px;align-items:center">
+      <div style="font-size:11px;color:var(--text3)">목표</div>
+      <div style="font-size:11px;color:var(--text3);text-align:right">배분액</div>
+      <div style="font-size:11px;color:var(--text3);text-align:right">비중</div>
+      <div style="font-size:11px;color:var(--text3);text-align:right">월 분할액</div>
+      ${rows.map(r=>`
+        <div style="font-size:13px;color:var(--text);font-weight:500">${r.name}</div>
+        <div style="font-size:13px;color:var(--teal);font-weight:700;text-align:right">${r.amt.toLocaleString()}만</div>
+        <div style="font-size:12px;color:var(--text2);text-align:right">${bonus>0?Math.round(r.amt/bonus*100):0}%</div>
+        <div style="font-size:13px;color:var(--teal2);font-weight:700;text-align:right">+${r.mo.toLocaleString()}만/월</div>
+      `).join('')}
+    </div>`;
+
+  if(tableStep2) tableStep2.innerHTML = makeTable(rows);
+  if(tableStep6) tableStep6.innerHTML = makeTable(rows);
+  if(noteStep6) noteStep6.textContent = `▸ 투입 기간: ${periodStr} | 목표 계좌(ISA·연금·일반)에 비중대로 분산 납입`;
+}
+
 function updateStickyBar(){
   const income  = parseInt(document.getElementById('income')?.value)||0;
   const savable = parseInt(document.getElementById('savable')?.value)||0;
@@ -1257,6 +1347,7 @@ function updSum(){
   });
   document.getElementById('alloc-sum').textContent=sum;
   document.getElementById('alloc-sum').style.color=sum>(parseInt(document.getElementById('savable').value)||0)?'#e88':'var(--teal)';
+  updateBonusAlloc(); // 목표 배분 변경 시 성과급 배분도 재계산
 }
 function buildAssetLink(goals){
   // 동적 적금 카드들 수집
@@ -1379,6 +1470,8 @@ function buildPreview(){
 | 월 세후소득 | ${v('income')} |
 | 월 고정지출 | ${v('expense')} |
 | 월 저축가능 | ${v('savable')} |
+| 연간 성과급 | ${v('bonus_annual')} |
+| 성과급 수령월 | ${v('bonus_month')}월 |
 | 대출 잔액 | ${v('loan')} |
 | 대출 금리 | ${v('loanrate')}% |
 
@@ -1399,6 +1492,32 @@ ${taxAccts.join('\n')}
 |------|------|------|--------------|
 | 1순위 | ${document.getElementById('goal1_type')?.value||''} | ${v('goal1_year')}년 후 | ${v('goal1_amt')} |
 | 2순위 | ${document.getElementById('goal2_type')?.value||'없음'} | ${v('goal2_year')}년 후 | ${v('goal2_amt')} |
+
+## 성과급 투자 계획
+${(()=>{
+  const bonus = parseInt(document.getElementById('bonus_annual')?.value)||0;
+  if(bonus<=0) return '| 성과급 | 해당없음 |';
+  const bonusMonth = parseInt(document.getElementById('bonus_month')?.value)||1;
+  const alloc_g1 = parseInt(document.getElementById('alloc_g1')?.value)||0;
+  const alloc_g2 = parseInt(document.getElementById('alloc_g2')?.value)||0;
+  const totalMo = alloc_g1+alloc_g2||1;
+  const b1 = Math.round(bonus*alloc_g1/totalMo);
+  const b2 = bonus-b1;
+  const g1 = document.getElementById('goal1_type')?.value||'목표1';
+  const g2 = document.getElementById('goal2_type')?.value||'목표2';
+  const months=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  const sm = bonusMonth>0?bonusMonth-1:0;
+  const em = (sm+5)%12;
+  const period = bonusMonth>0?`${months[sm]}~${months[em]}`:'불규칙';
+  return `| 항목 | 내용 |
+|------|------|
+| 연간 성과급 총액 | ${bonus}만원 |
+| 수령 시기 | ${bonusMonth>0?months[sm]:'불규칙'} |
+| 분할 투입 기간 | ${period} (6개월 분할) |
+| ${g1} 배분액 | ${b1}만원 (월 ${Math.round(b1/6)}만원씩) |
+| ${g2} 배분액 | ${b2}만원 (월 ${Math.round(b2/6)}만원씩) |
+| 투입 계좌 | 재무목표별 비중대로 ISA·연금저축·일반계좌 분산 |`;
+})()}
 
 ## 투자성향 진단
 | 항목 | 내용 |
@@ -1461,6 +1580,25 @@ function doSend(){
     });
   });
   snapshot['__savCards__'] = savCards;
+
+  // 성과급 배분 계산값 직렬화
+  const bonusAnnual = parseInt(document.getElementById('bonus_annual')?.value)||0;
+  const bonusMonth  = parseInt(document.getElementById('bonus_month')?.value)||1;
+  const ag1 = parseInt(document.getElementById('alloc_g1')?.value)||0;
+  const ag2 = parseInt(document.getElementById('alloc_g2')?.value)||0;
+  const bTotal = ag1+ag2||1;
+  const bRatio1 = ag1/bTotal, bRatio2 = ag2/bTotal;
+  snapshot['__bonusAlloc__'] = {
+    annual: bonusAnnual,
+    receive_month: bonusMonth,
+    split_months: 6,
+    goal1_amt: Math.round(bonusAnnual * bRatio1),
+    goal1_monthly: Math.round(bonusAnnual * bRatio1 / 6),
+    goal2_amt: bonusAnnual - Math.round(bonusAnnual * bRatio1),
+    goal2_monthly: Math.round((bonusAnnual - Math.round(bonusAnnual * bRatio1)) / 6),
+    ratio1_pct: Math.round(bRatio1*100),
+    ratio2_pct: Math.round(bRatio2*100),
+  };
 
   const jsonStr = JSON.stringify(snapshot, null, 2);
   const fullMD  = txt + '\n\n<!--JSON_DATA\n' + jsonStr + '\nJSON_DATA-->';
@@ -1632,6 +1770,9 @@ function parseAndFill(txt){
   setV('income',  ex(/월 세후소득\s*\|\s*([\d]+)/));
   setV('expense', ex(/월 고정지출\s*\|\s*([\d]+)/));
   setV('savable', ex(/월 저축가능\s*\|\s*([\d]+)/));
+  setV('bonus_annual', ex(/연간 성과급\s*\|\s*([\d]+)/));
+  const bonusMonthMatch = ex(/성과급 수령월\s*\|\s*([\d]+)월/);
+  if(bonusMonthMatch) setV('bonus_month', bonusMonthMatch);
   setV('loan',    ex(/대출 잔액\s*\|\s*([\d]+)/));
   setV('deposit', ex(/예금\s*\|\s*([\d]+)/));
   setV('etf_stock', ex(/ETF\(주식형\)\s*\|\s*([\d]+)/));
